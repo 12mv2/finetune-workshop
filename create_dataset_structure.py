@@ -12,8 +12,8 @@ def create_dataset_structure(base_path='hand_cls'):
     
     # Define the structure
     structure = {
-        'train': ['hand_prop', 'not_hand'],
-        'val': ['hand_prop', 'not_hand']
+        'train': ['hand', 'not_hand'],
+        'val': ['hand', 'not_hand']
     }
     
     # Create base directory
@@ -40,8 +40,8 @@ def create_dataset_structure(base_path='hand_cls'):
     
     # Create README in each directory
     readme_content = {
-        'hand_prop': "Place images of the Halloween hand prop here.",
-        'not_hand': "Place images of other objects (not the hand) here."
+        'hand': "Place images of hands (Halloween prop or real hands) here.",
+        'not_hand': "Place images of other objects (not hands) here."
     }
     
     for split in ['train', 'val']:
@@ -62,7 +62,7 @@ def create_dataset_structure(base_path='hand_cls'):
     
     print("\n📝 Next steps:")
     print("1. Add your images to the appropriate folders:")
-    print("   - hand_prop: Photos of your Halloween hand")
+    print("   - hand: Photos of hands (Halloween prop or real hands)")
     print("   - not_hand: Photos of other objects")
     print("2. Aim for ~80% train, ~20% validation split")
     print("3. Use .jpg, .jpeg, or .png formats")
@@ -93,7 +93,7 @@ def check_dataset(base_path='hand_cls'):
     
     for split in ['train', 'val']:
         print(f"\n{split.upper()} set:")
-        for class_name in ['hand_prop', 'not_hand']:
+        for class_name in ['hand', 'not_hand']:
             class_path = os.path.join(base_path, split, class_name)
             if os.path.exists(class_path):
                 images = [f for f in os.listdir(class_path) 

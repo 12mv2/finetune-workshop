@@ -27,14 +27,16 @@ This guide walks you through setting up a GPU pod on RunPod for the workshop.
 
 1. Click **"Change Template"**
 2. Search for **"PyTorch"**
-3. Select **"RunPod Pytorch 2.0.1"** (or latest version)
-   - This includes CUDA, Python 3.10+, and Jupyter
+3. Select **"PyTorch 2.4 + CUDA 12.4"** template
+   - Full name: `runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04`
+   - This includes CUDA, Python 3.11, and Jupyter
 
 ## Step 4: Configure Resources
 
 - **Container Disk**: 20 GB (default is fine)
-- **Volume Disk**: 0 GB (we don't need persistent storage)
-- **Ports**: Leave default
+- **Volume Disk**: 20 GB (recommended for persistent storage)
+- **Expose SSH Port**: Check "Expose SSH" or ensure port 22 is exposed
+- **Skip Jupyter**: We'll use SSH for this workshop
 
 ## Step 5: Deploy Pod
 
@@ -42,84 +44,91 @@ This guide walks you through setting up a GPU pod on RunPod for the workshop.
 2. Wait 1-2 minutes for pod to initialize
 3. You'll see status change from "Creating" → "Running"
 
-## Step 6: Connect to Your Pod
+## Step 6: Connect to Your Pod via SSH
 
-### Option A: Web Terminal (Easiest)
-1. Click **"Connect"** button
-2. Select **"Connect to Web Terminal"**
-3. You now have a browser-based terminal!
-
-### Option B: SSH Connection
 1. Click **"Connect"** → **"Connect via SSH"**
-2. Copy the SSH command
-3. Open your local terminal and paste:
+2. Copy the SSH command (it will look like: `ssh root@[pod-ip-or-host]`)
+3. Open your local terminal and paste the command
+
+**First-time connection:**
 ```bash
-ssh root@[your-pod-ip] -p [port] -i ~/.ssh/id_rsa
+# Connect to your pod
+ssh root@[pod-ip-or-host]
+
+# Start a persistent session (recommended)
+tmux new -s train
 ```
 
-### Option C: Jupyter Lab
-1. Click **"Connect"** → **"Connect to Jupyter Lab"**
-2. Great for running the notebook interactively
+**Why tmux?** It keeps your training running even if your SSH connection drops. To reconnect:
+```bash
+ssh root@[pod-ip-or-host]
+tmux attach -t train
+```
 
 ## Step 7: Initial Setup
 
 Once connected, run these commands:
 
 ```bash
-# Update pip
-pip install --upgrade pip
+# Quick environment check
+python - <<'EOF'
+import torch
+print(f"PyTorch: {torch.__version__}")
+print(f"CUDA available: {torch.cuda.is_available()}")
+print(f"GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'None'}")
+EOF
 
-# Clone the workshop repository
-git clone https://github.com/[your-username]/halloween-hand-workshop.git
-cd halloween-hand-workshop
+# Check GPU details
+nvidia-smi | head -n 10
 
 # Install dependencies
-pip install -r requirements.txt
+pip install --upgrade pip
+pip install ultralytics opencv-python
 
-# Verify GPU is available
-python -c "import torch; print(f'GPU Available: {torch.cuda.is_available()}')"
+# Verify installation
+yolo version
 ```
 
 ## Step 8: Transfer Your Dataset
 
-### Option A: Using SCP (from your local machine)
+From your LOCAL terminal (where you prepared the dataset):
+
+### Using rsync (Recommended)
 ```bash
-# From your LOCAL terminal (not RunPod)
-scp -P [port] -r hand_cls root@[your-pod-ip]:~/halloween-hand-workshop/
+# Navigate to parent of hand_cls folder
+cd /path/to/your/dataset/parent
+
+# Sync the dataset (replace [pod-host] with your RunPod hostname)
+rsync -avh hand_cls/ root@[pod-host]:/workspace/hand_cls/
 ```
 
-### Option B: Using rsync (better for large files)
+### Using scp (Alternative)
 ```bash
-# From your LOCAL terminal
-rsync -avz -e "ssh -p [port]" hand_cls/ root@[your-pod-ip]:~/halloween-hand-workshop/hand_cls/
+# Copy the entire folder
+scp -r hand_cls/ root@[pod-host]:/workspace/hand_cls/
 ```
 
-### Option C: Upload to Google Drive
-1. Upload your `hand_cls` folder to Google Drive
-2. In RunPod terminal:
-```bash
-pip install gdown
-# Get the file ID from your Google Drive share link
-gdown --folder https://drive.google.com/drive/folders/[your-folder-id]
-```
+**Note**: RunPod typically uses standard SSH port 22, so no `-P` flag needed unless specified otherwise.
 
 ## Step 9: Verify Setup
 
 Run this checklist:
 
 ```bash
-# Check you're in the right directory
-pwd  # Should show: /root/halloween-hand-workshop
+# Check dataset location
+ls -la /workspace/hand_cls/
+# Should show: train/ val/
 
 # Check dataset structure
-ls hand_cls/train/  # Should show: hand_prop not_hand
-ls hand_cls/val/    # Should show: hand_prop not_hand
+ls /workspace/hand_cls/train/  # Should show: hand not_hand
+ls /workspace/hand_cls/val/    # Should show: hand not_hand
 
 # Count images
-find hand_cls -name "*.jpg" -o -name "*.png" | wc -l
+find /workspace/hand_cls -name "*.jpg" -o -name "*.png" | wc -l
 
-# Test YOLOv8 import
-python -c "from ultralytics import YOLO; print('YOLOv8 ready!')"
+# Test YOLOv8 with correct data path
+yolo classify train data=/workspace/hand_cls epochs=1 device=0
+# This will download yolov8n-cls.pt from Hugging Face and verify setup
 ```
 
 ## Step 10: Start Training!
@@ -127,11 +136,20 @@ python -c "from ultralytics import YOLO; print('YOLOv8 ready!')"
 You're ready to train:
 
 ```bash
-# Run the training script
-bash train.sh
+cd /workspace
 
-# Or run directly:
-yolo classify train data=hand_cls model=yolov8n-cls.pt epochs=15 imgsz=224 device=0
+# Full training command
+yolo classify train \
+  model=yolov8n-cls.pt \
+  data=/workspace/hand_cls \
+  epochs=15 \
+  imgsz=224 \
+  batch=32 \
+  device=0 \
+  freeze=10
+
+# Training progress appears in real-time
+# Results saved to runs/classify/train*/
 ```
 
 ## Monitoring Training
@@ -142,11 +160,17 @@ yolo classify train data=hand_cls model=yolov8n-cls.pt epochs=15 imgsz=224 devic
 
 ## Downloading Results
 
-After training, download your model:
+After training completes, download your model to your local Mac:
 
 ```bash
-# From your LOCAL terminal
-scp -P [port] root@[your-pod-ip]:~/halloween-hand-workshop/runs/classify/train/weights/best.pt ./
+# First, find the exact path on RunPod
+ssh root@[pod-host] "ls /workspace/runs/classify/*/weights/best.pt"
+
+# From your LOCAL terminal, download the model
+scp root@[pod-host]:/workspace/runs/classify/train/weights/best.pt ./
+
+# Verify download
+ls -lh best.pt  # Should be ~5-10MB
 ```
 
 ## Stopping Your Pod
@@ -159,6 +183,27 @@ scp -P [port] root@[your-pod-ip]:~/halloween-hand-workshop/runs/classify/train/w
 4. Confirm the action
 
 **Tip**: "Stop" keeps your data but still charges storage. "Terminate" deletes everything and stops all charges.
+
+## tmux Quick Reference
+
+Essential tmux commands for managing your training session:
+
+```bash
+# Start new session
+tmux new -s train
+
+# Detach from session (training continues)
+Ctrl+b, then d
+
+# List sessions
+tmux ls
+
+# Reattach to session
+tmux attach -t train
+
+# Kill session (if needed)
+tmux kill-session -t train
+```
 
 ## Troubleshooting
 

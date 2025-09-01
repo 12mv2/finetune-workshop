@@ -4,18 +4,53 @@
 
 set -e
 
-# Install dependencies
+echo "=== Environment Check ==="
+python - <<'EOF'
+import torch
+print(f"PyTorch: {torch.__version__}")
+print(f"CUDA available: {torch.cuda.is_available()}")
+if torch.cuda.is_available():
+    print(f"GPU: {torch.cuda.get_device_name(0)}")
+    print(f"GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
+EOF
+
+echo -e "\n=== NVIDIA GPU Info ==="
+nvidia-smi | head -n 15
+
+echo -e "\n=== Installing Dependencies ==="
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install ultralytics opencv-python
+
+echo -e "\n=== Starting Training ==="
+echo "Dataset path: /workspace/hand_cls"
+echo "Epochs: ${EPOCHS:-15}"
+echo "Batch size: ${BATCH_SIZE:-32}"
+
+# Check dataset exists
+if [ ! -d "/workspace/hand_cls" ]; then
+    echo "ERROR: Dataset not found at /workspace/hand_cls"
+    echo "Please upload your dataset first using:"
+    echo "  rsync -avh hand_cls/ root@[pod-host]:/workspace/hand_cls/"
+    exit 1
+fi
+
+# Count images
+echo -e "\n=== Dataset Summary ==="
+echo "Train images:"
+find /workspace/hand_cls/train -name "*.jpg" -o -name "*.png" | wc -l
+echo "Val images:"
+find /workspace/hand_cls/val -name "*.jpg" -o -name "*.png" | wc -l
 
 # Train the classifier
-# Assumes dataset is in ./hand_cls
-# Adjust epochs and batch size as needed
-
+echo -e "\n=== Training YOLOv8 Classifier ==="
 yolo classify train \
-  data=hand_cls \
+  data=/workspace/hand_cls \
   model=yolov8n-cls.pt \
   epochs=${EPOCHS:-15} \
   imgsz=224 \
   batch=${BATCH_SIZE:-32} \
-  device=0
+  device=0 \
+  freeze=10
+
+echo -e "\n=== Training Complete ==="
+echo "Best weights saved at: /workspace/runs/classify/train*/weights/best.pt"

@@ -2,6 +2,31 @@
 
 This repository provides the materials for a 1.5‑hour workshop on fine‑tuning **Ultralytics YOLOv8** for image classification.  The goal is to train a binary classifier that detects whether a 3D‑printed Halloween hand is visible in an image and then build a fun live demo that reacts when the hand appears.
 
+## ✅ Tested Workshop Flow
+
+This workshop has been fully tested end-to-end. Here's what we'll do:
+
+1. **Local Setup** (10 min)
+   - Install dependencies: `pip install -r requirements.txt`
+   - Create dataset structure: `python3 create_dataset_structure.py`
+   - Add 50-100 images (or use test images for practice)
+
+2. **RunPod GPU Setup** (15 min)
+   - Add SSH key to RunPod settings
+   - Create RTX A5000 pod with PyTorch 2.4 + CUDA 12.4
+   - Connect via SSH (accept fingerprint prompt)
+   - Install tmux: `apt update && apt install -y tmux`
+
+3. **Upload & Train** (20 min)
+   - Upload dataset: `scp -r -P [port] hand_cls root@[ip]:/workspace/`
+   - Run training: `yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15`
+   - Training completes in ~5-10 minutes
+
+4. **Download & Demo** (10 min)
+   - Download model: `scp -P [port] root@[ip]:/workspace/runs/classify/train*/weights/best.pt ./`
+   - Run demo: `python3 live_demo.py --weights best.pt`
+   - Webcam opens with MPS acceleration on Mac
+
 ## Objectives
 
 * **Fine‑tune a pretrained model.**  We will start from the `yolov8n‑cls.pt` weights (pretrained on ImageNet) and fine‑tune only the classifier head to distinguish two classes: `hand` and `not_hand`.
@@ -136,17 +161,34 @@ The script will automatically detect and use Apple Silicon GPU (MPS) if availabl
 | 1:05–1:20 | Evaluation: inspect metrics, run `yolo classify val`            |
 | 1:20–1:30 | Live demo: run `live_demo.py` and overlay the spooky message    |
 
-## Notes
+## Known Issues & Solutions (From Testing)
 
-* If training is too slow, lower the number of epochs or freeze the backbone by passing `--freeze 24` (freezes the first 24 layers).
-* If there are webcam issues, you can test the model by running `yolo classify predict` on a static image: `yolo classify predict model=runs/classify/train/weights/best.pt source=path/to/image.jpg`.
-* This repository is intentionally lightweight to keep setup simple.  Feel free to extend it by adding notebooks, different models, or advanced augmentation pipelines.
+### SSH & Connection
+- **"authenticity can't be established"** → Type `yes` (normal first-time connection)
+- **tmux not found** → Run `apt update && apt install -y tmux`
+- **Wrong terminal confusion** → Upload from LOCAL Mac, train on RunPod
+
+### File Transfer
+- **rsync fails** → Use scp with port: `scp -r -P [port] hand_cls root@[ip]:/workspace/`
+- **"subsystem request failed"** → Use the direct IP connection (second SSH option)
+
+### Training
+- **"does not require grad" error** → Remove `freeze=10` parameter or reduce batch size
+- **CUDA out of memory** → Use `batch=16` or `batch=8`
+
+### General Tips
+- Keep both terminals open (local + RunPod SSH)
+- RunPod shows internal IP (172.x.x.x) - ignore it, use the SSH connection info
+- Training on 20 test images takes seconds, real dataset (100+ images) takes 5-10 minutes
+- **STOP YOUR POD** when done to avoid charges!
 
 ## Quick Start Scripts
 
+- **`tested_workflow.sh`** - Exact commands from our successful test run
 - **`prepare_and_upload.sh`** - Prepare and upload dataset to RunPod
 - **`runpod_setup.sh`** - Initial setup on RunPod instance
 - **`runpod_train.sh`** - Complete training script for RunPod
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - One-page command reference
 
 ## Additional Resources
 

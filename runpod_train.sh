@@ -28,14 +28,14 @@ echo "  not_hand: $(find /workspace/hand_cls/val/not_hand -name "*.jpg" -o -name
 echo -e "\n=== Starting Training ==="
 cd /workspace
 
+# Note: Removed freeze=10 due to gradient issues with small datasets
 yolo classify train \
   model=yolov8n-cls.pt \
   data=/workspace/hand_cls \
   epochs=15 \
   imgsz=224 \
-  batch=32 \
+  batch=16 \
   device=0 \
-  freeze=10 \
   name=halloween_hand \
   exist_ok=True
 

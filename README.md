@@ -153,6 +153,7 @@ The script will automatically detect and use Apple Silicon GPU (MPS) if availabl
 - **[Workshop Slides](docs/workshop_slides.md)** - Introduction presentation
 - **[RunPod Setup Guide](docs/runpod_setup.md)** - Detailed GPU setup instructions
 - **[RunPod Quick Setup](docs/runpod_quick_setup.md)** - One-page setup reference
+- **[RunPod Troubleshooting](docs/runpod_setup_troubleshooting.md)** - Real-world issues and solutions
 - **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
 - **[Next Steps](docs/next_steps.md)** - Continue learning after the workshop
 

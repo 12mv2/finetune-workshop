@@ -142,10 +142,17 @@ The script will automatically detect and use Apple Silicon GPU (MPS) if availabl
 * If there are webcam issues, you can test the model by running `yolo classify predict` on a static image: `yolo classify predict model=runs/classify/train/weights/best.pt source=path/to/image.jpg`.
 * This repository is intentionally lightweight to keep setup simple.  Feel free to extend it by adding notebooks, different models, or advanced augmentation pipelines.
 
+## Quick Start Scripts
+
+- **`prepare_and_upload.sh`** - Prepare and upload dataset to RunPod
+- **`runpod_setup.sh`** - Initial setup on RunPod instance
+- **`runpod_train.sh`** - Complete training script for RunPod
+
 ## Additional Resources
 
 - **[Workshop Slides](docs/workshop_slides.md)** - Introduction presentation
 - **[RunPod Setup Guide](docs/runpod_setup.md)** - Detailed GPU setup instructions
+- **[RunPod Quick Setup](docs/runpod_quick_setup.md)** - One-page setup reference
 - **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
 - **[Next Steps](docs/next_steps.md)** - Continue learning after the workshop
 

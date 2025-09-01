@@ -5,8 +5,8 @@ A well‑prepared dataset is critical for successful model training.  Follow the
 ## 1. Capture Photos
 
 * **Number of images:** Aim for 50–100 photos in total.  More data generally yields better results, but even ~25 images per class can work for a simple workshop.
-* **Hand images (`hand_prop`):**
-  * Photograph your 3D‑printed Halloween hand from various angles (front, side, top).
+* **Hand images (`hand`):**
+  * Photograph your 3D‑printed Halloween hand (or any hand) from various angles (front, side, top).
   * Vary the distance (close‑up and far away) and lighting (bright, dim, shadows).
   * Include different backgrounds so the model learns to focus on the hand.
 * **Non‑hand images (`not_hand`):**
@@ -21,24 +21,24 @@ Organise your images in a folder tree like this (relative to the repository root
 ```
 hand_cls/
   train/
-    hand_prop/
+    hand/
     not_hand/
   val/
-    hand_prop/
+    hand/
     not_hand/
 ```
 
 * **`train/`** contains the images used for training (~80 % of your photos).
 * **`val/`** contains the validation images (~20 %).  The validation set provides an unbiased estimate of the model’s performance during training.
 
-> The folder names (`hand_prop` and `not_hand`) are the class labels—YOLOv8 automatically maps folder names to class indices.
+> The folder names (`hand` and `not_hand`) are the class labels—YOLOv8 automatically maps folder names to class indices.
 
 ### Example
 
 Suppose you captured 60 images of the hand and 60 images of miscellaneous objects.  You might distribute them as follows:
 
-* `hand_cls/train/hand_prop` → 48 images
-* `hand_cls/val/hand_prop` → 12 images
+* `hand_cls/train/hand` → 48 images
+* `hand_cls/val/hand` → 12 images
 * `hand_cls/train/not_hand` → 48 images
 * `hand_cls/val/not_hand` → 12 images
 
@@ -64,7 +64,7 @@ from collections import Counter
 
 root = 'hand_cls'
 for split in ['train', 'val']:
-    for cls in ['hand_prop', 'not_hand']:
+    for cls in ['hand', 'not_hand']:
         path = os.path.join(root, split, cls)
         count = len([f for f in os.listdir(path) if f.lower().endswith(('.jpg', '.jpeg', '.png'))])
         print(f"{split}/{cls}: {count} images")

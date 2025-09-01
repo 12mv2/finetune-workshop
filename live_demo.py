@@ -10,6 +10,7 @@ import argparse
 import cv2
 import numpy as np
 import os
+import torch
 from ultralytics import YOLO
 
 
@@ -42,6 +43,17 @@ def apply_overlay(frame, overlay, x, y):
 
 
 def main(weights: str, imgsz: int = 224, use_overlay: bool = True) -> None:
+    # Detect device
+    if torch.backends.mps.is_available():
+        device = 'mps'
+        print("Using Apple Silicon GPU (MPS)")
+    elif torch.cuda.is_available():
+        device = 'cuda'
+        print("Using NVIDIA GPU (CUDA)")
+    else:
+        device = 'cpu'
+        print("Using CPU")
+    
     # Load trained model
     model = YOLO(weights)
     
@@ -66,8 +78,8 @@ def main(weights: str, imgsz: int = 224, use_overlay: bool = True) -> None:
         # Resize frame to the model's expected image size
         resized = cv2.resize(frame, (imgsz, imgsz))
 
-        # Run inference
-        results = model(resized, verbose=False)[0]
+        # Run inference with specified device
+        results = model(resized, verbose=False, device=device)[0]
         # Find the class with the highest probability
         probs = results.probs.data.tolist()
         names = results.names
@@ -75,7 +87,7 @@ def main(weights: str, imgsz: int = 224, use_overlay: bool = True) -> None:
         label = names[top_idx]
 
         # Overlay message if hand is detected
-        if label == 'hand_prop':
+        if label == 'hand':
             # Apply ghost overlay if available
             if ghost_overlay is not None:
                 # Position ghost in upper right

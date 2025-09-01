@@ -43,14 +43,15 @@ find /workspace/hand_cls/val -name "*.jpg" -o -name "*.png" | wc -l
 
 # Train the classifier
 echo -e "\n=== Training YOLOv8 Classifier ==="
+# Note: Removed freeze=10 due to gradient issues with small datasets
+# Reduced default batch size from 32 to 16 for stability
 yolo classify train \
   data=/workspace/hand_cls \
   model=yolov8n-cls.pt \
   epochs=${EPOCHS:-15} \
   imgsz=224 \
-  batch=${BATCH_SIZE:-32} \
-  device=0 \
-  freeze=10
+  batch=${BATCH_SIZE:-16} \
+  device=0
 
 echo -e "\n=== Training Complete ==="
 echo "Best weights saved at: /workspace/runs/classify/train*/weights/best.pt"

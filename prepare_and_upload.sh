@@ -35,7 +35,25 @@ fi
 
 # Upload dataset
 echo -e "\n=== Uploading Dataset ==="
-rsync -avh --progress hand_cls/ root@$RUNPOD_HOST:/workspace/hand_cls/
+echo "Attempting upload with rsync..."
+rsync -avh --progress hand_cls/ root@$RUNPOD_HOST:/workspace/hand_cls/ 2>/dev/null
+
+if [ $? -ne 0 ]; then
+    echo "rsync failed, trying scp instead..."
+    echo "Please provide the port number from your RunPod SSH command"
+    echo "(e.g., if SSH command is: ssh root@213.192.2.74 -p 40098)"
+    read -p "Enter port number: " PORT
+    
+    scp -r -P $PORT -i ~/.ssh/id_ed25519 hand_cls root@$RUNPOD_HOST:/workspace/
+    
+    if [ $? -eq 0 ]; then
+        echo "Upload successful with scp!"
+    else
+        echo "Upload failed. Please try manually with:"
+        echo "scp -r -P [port] -i ~/.ssh/id_ed25519 hand_cls root@[ip]:/workspace/"
+        exit 1
+    fi
+fi
 
 echo -e "\n=== Upload Complete! ==="
 echo "Next steps on RunPod:"

@@ -7,6 +7,27 @@ This guide walks you through setting up a GPU pod on RunPod for the workshop.
 - RunPod account (sign up at [runpod.io](https://runpod.io))
 - Credit added to your account ($5-10 is plenty for the workshop)
 - Your dataset prepared locally
+- SSH key added to RunPod settings (see Step 0 below)
+
+## Step 0: Add SSH Key to RunPod
+
+**IMPORTANT**: Do this before creating your pod!
+
+1. Get your SSH public key:
+   ```bash
+   cat ~/.ssh/id_ed25519.pub
+   ```
+   If you don't have one, create it:
+   ```bash
+   ssh-keygen -t ed25519 -C "your-email@example.com"
+   ```
+
+2. Copy the ENTIRE output (starts with `ssh-ed25519`)
+
+3. In RunPod:
+   - Go to Settings → SSH Keys
+   - Paste your public key
+   - Click Update
 
 ## Step 1: Create a New Pod
 
@@ -46,23 +67,32 @@ This guide walks you through setting up a GPU pod on RunPod for the workshop.
 
 ## Step 6: Connect to Your Pod via SSH
 
-1. Click **"Connect"** → **"Connect via SSH"**
-2. Copy the SSH command (it will look like: `ssh root@[pod-ip-or-host]`)
-3. Open your local terminal and paste the command
+RunPod will show two connection options:
+1. `ssh [pod-id]@ssh.runpod.io -i ~/.ssh/id_ed25519` (Recommended)
+2. `ssh root@[ip] -p [port] -i ~/.ssh/id_ed25519` (Backup option)
 
-**First-time connection:**
+**First connection:**
 ```bash
-# Connect to your pod
-ssh root@[pod-ip-or-host]
+# Use the first connection string
+ssh [pod-id]@ssh.runpod.io -i ~/.ssh/id_ed25519
 
-# Start a persistent session (recommended)
-tmux new -s train
+# You'll see a fingerprint warning - type 'yes' to continue
+# This is normal for first-time connections
 ```
 
-**Why tmux?** It keeps your training running even if your SSH connection drops. To reconnect:
+**Install and start tmux:**
 ```bash
-ssh root@[pod-ip-or-host]
-tmux attach -t train
+# Install tmux (if not already installed)
+apt update && apt install -y tmux
+
+# Start a persistent session
+tmux new -s workshop
+```
+
+**Why tmux?** It keeps your training running even if SSH disconnects. To reconnect:
+```bash
+ssh [pod-id]@ssh.runpod.io -i ~/.ssh/id_ed25519
+tmux attach -t workshop
 ```
 
 ## Step 7: Initial Setup
@@ -91,24 +121,28 @@ yolo version
 
 ## Step 8: Transfer Your Dataset
 
-From your LOCAL terminal (where you prepared the dataset):
+**IMPORTANT**: Run these commands from your LOCAL Mac terminal, NOT from the RunPod SSH session!
 
-### Using rsync (Recommended)
+### Using scp (Recommended - more reliable)
+
+If rsync fails, use scp with the direct connection:
 ```bash
-# Navigate to parent of hand_cls folder
-cd /path/to/your/dataset/parent
+# Navigate to workshop directory on your LOCAL machine
+cd "/Users/[your-username]/path/to/finetune-workshop"
 
-# Sync the dataset (replace [pod-host] with your RunPod hostname)
-rsync -avh hand_cls/ root@[pod-host]:/workspace/hand_cls/
+# Use the second SSH option from RunPod (with port)
+scp -r -P [port] -i ~/.ssh/id_ed25519 hand_cls root@[ip]:/workspace/
 ```
 
-### Using scp (Alternative)
+Example:
 ```bash
-# Copy the entire folder
-scp -r hand_cls/ root@[pod-host]:/workspace/hand_cls/
+scp -r -P 40098 -i ~/.ssh/id_ed25519 hand_cls root@213.192.2.74:/workspace/
 ```
 
-**Note**: RunPod typically uses standard SSH port 22, so no `-P` flag needed unless specified otherwise.
+### Common Issues:
+- **"rsync: command not found"** - You're in RunPod terminal! Switch to LOCAL terminal
+- **"unexpected tag" error** - Use scp instead of rsync
+- **"subsystem request failed"** - Use the direct IP method with port
 
 ## Step 9: Verify Setup
 

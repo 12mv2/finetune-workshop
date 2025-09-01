@@ -46,6 +46,11 @@ Place ~80 % of your images in `train` and ~20 % in `val`.  The folder names ar
 
 For more guidance on collecting and organising your photos, see **[`data_prep.md`](data_prep.md)**.
 
+You can also use the provided script to create the folder structure:
+```bash
+python create_dataset_structure.py
+```
+
 ## Training
 
 From the project root on your RunPod instance, run the following command.  Adjust `--epochs` to fit within your workshop time (10–15 epochs typically train in under 10 minutes on a T4 GPU):
@@ -97,4 +102,11 @@ Press `q` to quit the demo.
 * If there are webcam issues, you can test the model by running `yolo classify predict` on a static image: `yolo classify predict model=runs/classify/train/weights/best.pt source=path/to/image.jpg`.
 * This repository is intentionally lightweight to keep setup simple.  Feel free to extend it by adding notebooks, different models, or advanced augmentation pipelines.
 
-Enjoy your spooky classification workshop!
+## Additional Resources
+
+- **[Workshop Slides](docs/workshop_slides.md)** - Introduction presentation
+- **[RunPod Setup Guide](docs/runpod_setup.md)** - Detailed GPU setup instructions
+- **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
+- **[Next Steps](docs/next_steps.md)** - Continue learning after the workshop
+
+Enjoy your spooky classification workshop! 🎃

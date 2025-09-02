@@ -42,7 +42,7 @@ def apply_overlay(frame, overlay, x, y):
     return frame
 
 
-def main(weights: str, imgsz: int = 224, use_overlay: bool = True) -> None:
+def main(weights: str, imgsz: int = 224, use_overlay: bool = True, perfect_threshold: float = 99.9) -> None:
     # Detect device
     if torch.backends.mps.is_available():
         device = 'mps'
@@ -88,34 +88,49 @@ def main(weights: str, imgsz: int = 224, use_overlay: bool = True) -> None:
 
         # Overlay message if hand is detected
         if label == 'hand':
-            # Apply ghost overlay if available
-            if ghost_overlay is not None:
-                # Position ghost in upper right
-                x = frame.shape[1] - 200
-                y = 50
-                frame = apply_overlay(frame, ghost_overlay, x, y)
-            
-            # Add spooky text
-            cv2.putText(
-                frame,
-                'Spooky hand detected!',
-                (50, 50),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1.0,
-                (0, 0, 255),
-                2,
-                cv2.LINE_AA,
-            )
-            
-            # Add confidence score
             confidence = max(probs) * 100
+            
+            # Special effects only at perfect confidence
+            if confidence >= perfect_threshold:
+                # Apply ghost overlay if available
+                if ghost_overlay is not None:
+                    # Position ghost in upper right
+                    x = frame.shape[1] - 200
+                    y = 50
+                    frame = apply_overlay(frame, ghost_overlay, x, y)
+                
+                # Add special text with animation effect
+                cv2.putText(
+                    frame,
+                    '👻 PERFECT DETECTION! 👻',
+                    (50, 50),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1.2,
+                    (255, 0, 255),  # Magenta for special achievement
+                    3,
+                    cv2.LINE_AA,
+                )
+            else:
+                # Normal detection text
+                cv2.putText(
+                    frame,
+                    'Hand detected!',
+                    (50, 50),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1.0,
+                    (0, 0, 255),
+                    2,
+                    cv2.LINE_AA,
+                )
+            
+            # Always show confidence score
             cv2.putText(
                 frame,
                 f'Confidence: {confidence:.1f}%',
                 (50, 90),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.7,
-                (0, 255, 0),
+                (0, 255, 0) if confidence < perfect_threshold else (255, 215, 0),  # Gold at perfect
                 2,
                 cv2.LINE_AA,
             )
@@ -134,5 +149,6 @@ if __name__ == '__main__':
     parser.add_argument('--weights', type=str, required=True, help='Path to trained weights (e.g., runs/classify/train/weights/best.pt)')
     parser.add_argument('--imgsz', type=int, default=224, help='Image size expected by the model (default: 224)')
     parser.add_argument('--no-overlay', action='store_true', help='Disable overlay images (use text only)')
+    parser.add_argument('--perfect-threshold', type=float, default=99.9, help='Confidence threshold for special effects (default: 99.9)')
     args = parser.parse_args()
-    main(args.weights, args.imgsz, use_overlay=not args.no_overlay)
+    main(args.weights, args.imgsz, use_overlay=not args.no_overlay, perfect_threshold=args.perfect_threshold)

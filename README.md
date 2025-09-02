@@ -2,14 +2,54 @@
 
 This repository provides the materials for a 1.5‑hour workshop on fine‑tuning **Ultralytics YOLOv8** for image classification.  The goal is to train a binary classifier that detects whether a 3D‑printed Halloween hand is visible in an image and then build a fun live demo that reacts when the hand appears.
 
+## 🚀 Quick Start Cheat Sheet
+
+### Option A: Traditional Method (Reliable, 15 min)
+
+```bash
+# 1. LOCAL: Create dataset
+python3 capture_and_prepare.py  # Records videos & extracts images
+
+# 2. LOCAL: Upload images 
+scp -r -P [PORT] -i ~/.ssh/id_ed25519 hand_cls root@[IP]:/workspace/
+
+# 3. RUNPOD: Install & train
+pip install ultralytics
+yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=16
+
+# 4. LOCAL: Download model (first run = just "train", no number)
+scp -P [PORT] -i ~/.ssh/id_ed25519 root@[IP]:/workspace/runs/classify/train/weights/best.pt ./
+
+# 5. LOCAL: Test
+python3 live_demo.py --weights best.pt
+```
+
+### Option B: Fast Video Upload (Experimental, 10 min)
+
+```bash
+# 1. LOCAL: Record videos only
+python3 capture_videos_only.py
+
+# 2. LOCAL: Upload videos (40MB vs 400MB!)
+./upload_videos.sh
+
+# 3. RUNPOD: Extract & train
+./runpod_extract_and_train.sh
+
+# 4-5. Same as above
+```
+
+**💡 When in doubt, use Option A (traditional) - it always works!
+
 ## ✅ Tested Workshop Flow
 
 This workshop has been fully tested end-to-end. Here's what we'll do:
 
-1. **Local Setup** (10 min)
+1. **Local Setup** (5 min)
    - Install dependencies: `pip install -r requirements.txt`
-   - Create dataset structure: `python3 create_dataset_structure.py`
-   - Add 50-100 images (or use test images for practice)
+   - Create dataset with video capture: `python3 capture_and_prepare.py` 
+   - Records 2x20 second videos → extracts 200 images automatically
+   - Much faster than manual photos and gives better results!
 
 2. **RunPod GPU Setup** (15 min)
    - Add SSH key to RunPod settings
@@ -17,12 +57,15 @@ This workshop has been fully tested end-to-end. Here's what we'll do:
    - Connect via SSH (accept fingerprint prompt)
    - Install tmux: `apt update && apt install -y tmux`
 
-3. **Upload & Train** (20 min)
-   - Upload dataset: `scp -r -P [port] hand_cls root@[ip]:/workspace/`
-   - Run training: `yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15`
-   - Training completes in ~5-10 minutes
+3. **Upload & Train** (2-5 min with fast method!)
+   - **Option A - Fast Video Upload (Recommended)**: 
+     - Upload 2 videos: `./upload_videos.sh` (40MB in 1-2 min)
+     - Extract & train on RunPod: `./runpod_extract_and_train.sh`
+   - **Option B - Traditional**: 
+     - Upload 200+ images: `scp -r -P [port] hand_cls root@[ip]:/workspace/` (400MB in 10-15 min)
+   - Training completes in <1 minute on RTX A5000
 
-4. **Download & Demo** (10 min)
+4. **Download & Demo** (2 min)
    - Download model: `scp -P [port] root@[ip]:/workspace/runs/classify/train*/weights/best.pt ./`
    - Run demo: `python3 live_demo.py --weights best.pt`
    - Webcam opens with MPS acceleration on Mac
@@ -32,7 +75,7 @@ This workshop has been fully tested end-to-end. Here's what we'll do:
 * **Fine‑tune a pretrained model.**  We will start from the `yolov8n‑cls.pt` weights (pretrained on ImageNet) and fine‑tune only the classifier head to distinguish two classes: `hand` and `not_hand`.
 * **Prepare a simple dataset.**  You will capture ~100 photos on your phone, organise them into a folder structure and split them into training/validation sets.  No bounding boxes or keypoints are needed—class names are inferred from folder names.
 * **Train and evaluate.**  We will train the classifier using a GPU pod on RunPod, monitor accuracy, and explore the outputs.
-* **Live demo.**  Finally we will run a webcam loop locally on your Mac; when the `hand` class is detected, a spooky overlay or message appears on the frame.
+* **Live demo.**  Finally we will run a webcam loop locally on your Mac; when the `hand` class is detected, messages appear on screen. Get 100% confidence to unlock the special ghost overlay!
 
 ## Getting Started
 
@@ -75,6 +118,7 @@ This workshop has been fully tested end-to-end. Here's what we'll do:
 
 ## Dataset Preparation
 
+### Option A: Manual Photo Collection
 Capture 50–100 images with your phone:
 
 * **`hand`** — 25–50 photos of your 3D‑printed Halloween hand (or any hand) from different angles, distances and lighting conditions.
@@ -98,14 +142,61 @@ Place ~80 % of your images in `train` and ~20 % in `val`.  The folder names ar
 
 For more guidance on collecting and organising your photos, see **[`data_prep.md`](data_prep.md)**.
 
-You can also use the provided script to create the folder structure:
+Use the provided script to create the folder structure:
 ```bash
 python create_dataset_structure.py
+# Then manually copy your photos into the appropriate folders
 ```
+
+### Option B: Video Capture (Recommended for Workshops)
+Use our automated video capture tool to create a dataset in 2 minutes:
+
+```bash
+python3 capture_and_prepare.py
+```
+
+This tool will:
+1. Record 20 seconds of video with your hands visible
+2. Record 20 seconds of video without hands (background only)
+3. Extract frames at 5 fps to create 200 images total (100 per class)
+4. Automatically split 80/20 for training/validation
+
+**Requirements for video capture:**
+- Working webcam
+- ffmpeg installed (`brew install ffmpeg` on macOS)
+- Good lighting for best results
+
+The video capture method ensures consistent lighting and camera settings, which can lead to better model performance in workshop environments.
+
+### Improving Model Accuracy
+
+If your model is detecting false positives (e.g., 95% confidence when no hands are visible):
+
+1. **Add more varied training data**:
+   ```bash
+   python3 capture_videos_only.py  # Record with different poses/positions
+   ./upload_videos.sh               # Fast upload
+   ./runpod_extract_and_train.sh   # Choose option 2 (append)
+   ```
+
+2. **Tips for better "no hands" videos**:
+   - Include body positions that trigger false positives
+   - Vary distance from camera
+   - Different clothing (especially sleeves)
+   - Multiple backgrounds
+
+3. **Retrain with expanded dataset** (now 400+ images)
+   - The model learns to distinguish hands from body positions
+   - Typically achieves near-perfect accuracy after 2-3 rounds
+
+### Model Versioning Tips
+- Name your models meaningfully: `best_200imgs.pt`, `best_400imgs.pt`, `best_final.pt`
+- Keep track of what each version fixed (e.g., "v2 fixed sleeve false positives")
+- Test each version before deleting RunPod pod to avoid re-training
 
 ## Training on RunPod
 
-From the project root on your RunPod instance, run the following command.  Adjust `--epochs` to fit within your workshop time (10–15 epochs typically train in under 10 minutes on a T4 GPU):
+From the project root on your RunPod instance, run the following command.  Adjust `--epochs` to fit within your workshop time (10–15 epochs typically train in under 10 minutes on a RTX A5000 GPU with video capture data):
 
 ```bash
 # Train a YOLOv8 classifier on your dataset.
@@ -142,11 +233,21 @@ scp root@[pod-host]:/workspace/runs/classify/train/weights/best.pt ./
 
 ### Run the Demo Locally
 
-The demo script [`live_demo.py`](live_demo.py) runs on your local Mac using MPS acceleration.  It opens your webcam, feeds each frame to the trained model and overlays a spooky message when the `hand` class is detected:
+The demo script [`live_demo.py`](live_demo.py) runs on your local Mac using MPS acceleration.  It opens your webcam, feeds each frame to the trained model and shows detection results:
 
 ```bash
 python live_demo.py --weights best.pt --imgsz 224
 ```
+
+**Special Features:**
+- Shows "Hand detected!" with confidence percentage
+- At 100% confidence: Special "PERFECT DETECTION!" message with ghost overlay
+- Confidence text turns gold when perfect
+- Ghost overlay appears (if `assets/ghost.png` exists)
+
+**Options:**
+- `--no-overlay` - Disable ghost overlay, use text only
+- `--perfect-threshold 95.0` - Lower threshold for special effects (default: 99.9)
 
 The script will automatically detect and use Apple Silicon GPU (MPS) if available.  Press `q` to quit the demo.
 
@@ -163,39 +264,67 @@ The script will automatically detect and use Apple Silicon GPU (MPS) if availabl
 
 ## Known Issues & Solutions (From Testing)
 
+### Video Capture & Dataset Creation
+- **ModuleNotFoundError: ffmpeg** → Wrong package! Use `pip install ffmpeg-python` (not `pip install ffmpeg`)
+- **ffmpeg not found** → Install with `brew install ffmpeg` on macOS
+- **Multiple Python versions** → Check with `which python3` and ensure you're using the same Python for pip install and running scripts
+- **pyenv issues** → Try using `/usr/local/bin/python3` instead of `python3`
+- **PATH issues** → Add Homebrew to PATH: `export PATH="/opt/homebrew/bin:$PATH"`
+
 ### SSH & Connection
 - **"authenticity can't be established"** → Type `yes` (normal first-time connection)
+- **Connection refused** → You're using example values! Get YOUR actual IP and port from RunPod dashboard
 - **tmux not found** → Run `apt update && apt install -y tmux`
 - **Wrong terminal confusion** → Upload from LOCAL Mac, train on RunPod
 
 ### File Transfer
 - **rsync fails** → Use scp with port: `scp -r -P [port] hand_cls root@[ip]:/workspace/`
 - **"subsystem request failed"** → Use the direct IP connection (second SSH option)
+- **scp syntax error** → Keep entire command on ONE line, no line breaks
+
+### RunPod Setup
+- **yolo: command not found** → Install ultralytics first: `pip install ultralytics`
+- **Can't find model after training** → Check output for exact path (e.g., runs/classify/train3 not train)
+- **First training run** → Path is just `train` (no number), subsequent runs are train2, train3, etc.
+- **Script 404 errors** → If GitHub scripts give 404, create them locally or use traditional workflow
 
 ### Training
 - **"does not require grad" error** → Remove `freeze=10` parameter or reduce batch size
 - **CUDA out of memory** → Use `batch=16` or `batch=8`
+- **Training completes in seconds** → This is normal with RTX A5000! Video capture data trains very efficiently
 
 ### General Tips
 - Keep both terminals open (local + RunPod SSH)
 - RunPod shows internal IP (172.x.x.x) - ignore it, use the SSH connection info
-- Training on 20 test images takes seconds, real dataset (100+ images) takes 5-10 minutes
+- Training on 200 images from video capture takes less than 1 minute on RTX A5000!
 - **STOP YOUR POD** when done to avoid charges!
+
+### Which Terminal to Use
+- **LOCAL terminal**: Upload datasets, download models, run demos
+- **RUNPOD terminal**: Install packages (`pip install ultralytics`), run training
+- Common mistake: Running upload commands in RunPod terminal (won't work!)
+
+### Workflow Decision Guide
+- **Fast upload (videos)**: Best when you have slow internet or want quick iteration
+- **Traditional (images)**: Best when scripts fail or you want proven reliability
+- Both methods give identical results - choose based on your situation
 
 ## Quick Start Scripts
 
-- **`tested_workflow.sh`** - Exact commands from our successful test run
-- **`prepare_and_upload.sh`** - Prepare and upload dataset to RunPod
-- **`runpod_setup.sh`** - Initial setup on RunPod instance
-- **`runpod_train.sh`** - Complete training script for RunPod
+- **`capture_and_prepare.py`** - Record videos and extract frames locally
+- **`capture_videos_only.py`** - Record videos for fast upload workflow
+- **`upload_videos.sh`** - Fast upload script (2 videos instead of 200 images)
+- **`runpod_extract_and_train.sh`** - Extract frames and train on RunPod
 - **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - One-page command reference
 
 ## Additional Resources
 
+- **[Fast Video Upload Workflow](docs/fast_workflow.md)** - Upload videos instead of images (5-10x faster!)
 - **[Workshop Slides](docs/workshop_slides.md)** - Introduction presentation
 - **[RunPod Setup Guide](docs/runpod_setup.md)** - Detailed GPU setup instructions
 - **[RunPod Quick Setup](docs/runpod_quick_setup.md)** - One-page setup reference
 - **[RunPod Troubleshooting](docs/runpod_setup_troubleshooting.md)** - Real-world issues and solutions
+- **[Video Capture Troubleshooting](docs/video_capture_troubleshooting.md)** - Fix video capture and ffmpeg issues
 - **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
 - **[Next Steps](docs/next_steps.md)** - Continue learning after the workshop
 

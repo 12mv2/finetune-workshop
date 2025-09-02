@@ -47,9 +47,26 @@ finetune-workshop/
     └── overlay_info.md       # Instructions for ghost overlays
 ```
 
-## What We Tested (September 1, 2025)
+## Project Timeline
 
-### Successful Test Run
+### Initial Development (September 1, 2025 - Earlier)
+- **Time**: ~14:00-15:00 PST
+- Created initial workshop materials
+- Implemented dataset structure script
+- Built live demo with MPS support
+- Created documentation structure
+
+### Major Updates (September 1, 2025 - Mid-session)
+- **Time**: ~15:00-16:00 PST
+- Switched from hand_prop to hand class naming
+- Added freeze=10 parameter (later removed)
+- Updated to SSH-first workflow
+- Added tmux instructions
+
+### Live Testing (September 1, 2025 - Later)
+- **Time**: ~16:00-17:00 PST
+
+#### Test Run Details
 1. Created RunPod account and added SSH key
 2. Deployed RTX A5000 pod with PyTorch 2.4 + CUDA 12.4
 3. Connected via SSH: `ssh oyzsz5hz9pd68b-64410ff0@ssh.runpod.io`
@@ -130,6 +147,26 @@ finetune-workshop/
 ## Final Notes
 This workshop has been successfully tested end-to-end. The materials are production-ready. Any changes should be tested with an actual RunPod instance before committing. The workflow is optimized for beginners and handles all common issues we encountered during testing.
 
-Last updated: September 1, 2025
+## Session Summary
+
+### Timeline
+- **Session Start**: September 1, 2025, ~14:00 PST
+- **Initial Development**: 14:00-15:00 PST
+- **Major Refactoring**: 15:00-16:00 PST
+- **RunPod Testing**: 16:00-17:00 PST
+- **Documentation Updates**: 17:00-17:30 PST
+- **Session End**: September 1, 2025, ~17:30 PST
+
+### Key Milestones
+1. **14:15** - Created initial project structure
+2. **14:45** - Implemented MPS support for Mac
+3. **15:20** - Switched to SSH-first workflow
+4. **16:10** - Successfully connected to RunPod
+5. **16:30** - Completed first training run
+6. **17:00** - Fixed all issues and updated docs
+7. **17:30** - Created handoff documentation
+
+Last updated: September 1, 2025, 17:30 PST
 Tested by: Colin Rooney with Claude
-Status: ✅ Fully working
+Total session time: ~3.5 hours
+Status: ✅ Fully working and documented

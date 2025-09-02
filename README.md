@@ -1,5 +1,9 @@
 # Quick Object Classification Workshop: Halloween Hand
 
+> ## 💻 Platform-Specific Instructions
+> - **Windows Users** → [**Click here for Windows instructions**](WINDOWS_README.md) 🪟
+> - **macOS/Linux Users** → Continue reading below 🍎🐧
+
 This repository provides the materials for a 1.5‑hour workshop on fine‑tuning **Ultralytics YOLOv8** for image classification.  The goal is to train a binary classifier that detects whether a 3D‑printed Halloween hand is visible in an image and then build a fun live demo that reacts when the hand appears.
 
 ## 🚀 Quick Start Cheat Sheet
@@ -319,6 +323,8 @@ The script will automatically detect and use Apple Silicon GPU (MPS) if availabl
 
 ## Additional Resources
 
+- **[Windows Instructions](WINDOWS_README.md)** - Complete guide for Windows users
+- **[Windows Setup Guide](docs/windows_setup.md)** - Detailed Windows environment setup
 - **[Fast Video Upload Workflow](docs/fast_workflow.md)** - Upload videos instead of images (5-10x faster!)
 - **[Workshop Slides](docs/workshop_slides.md)** - Introduction presentation
 - **[RunPod Setup Guide](docs/runpod_setup.md)** - Detailed GPU setup instructions

@@ -166,7 +166,101 @@ This workshop has been successfully tested end-to-end. The materials are product
 6. **17:00** - Fixed all issues and updated docs
 7. **17:30** - Created handoff documentation
 
-Last updated: September 1, 2025, 17:30 PST
-Tested by: Colin Rooney with Claude
-Total session time: ~3.5 hours
-Status: ✅ Fully working and documented
+## Video Capture Update (September 2, 2025)
+
+### What We Added
+1. **Video capture system** for quick dataset creation
+   - `capture_dataset_videos.py` - Records 2x20 second videos with countdown
+   - `extract_frames_to_dataset.py` - Extracts frames at 5 fps (100 per video)
+   - `capture_and_prepare.py` - Combined workflow script
+
+2. **Key Features**
+   - 2-second preparation warning before recording
+   - Visual countdown (3-2-1)
+   - Automatic 80/20 train/val split
+   - Creates perfectly balanced dataset (100 hand, 100 not_hand)
+
+3. **Testing Results**
+   - Dataset creation: 2 minutes (vs 30+ for manual photos)
+   - Training time: <1 minute on RTX A5000
+   - Model accuracy: 100% on validation set
+   - Much more consistent than phone photos
+
+### New Issues Discovered & Fixed
+
+#### Python Environment Chaos
+- User had multiple Python installations (pyenv 3.11.6, system 3.12.8)
+- `pip install` went to different Python than `python3` command
+- Solution: Use explicit paths like `/usr/local/bin/python3`
+
+#### FFmpeg Package Confusion
+- `pip install ffmpeg` installs wrong, outdated package
+- Must use `pip install ffmpeg-python` for the correct wrapper
+- Homebrew ffmpeg also needs to be in PATH
+
+#### RunPod Training Setup
+- `yolo` command not found - need to `pip install ultralytics` first
+- Model saves to numbered directories (train3, not train)
+- Training on 200 video-captured images takes <1 minute!
+
+### Documentation Updates
+- Added comprehensive troubleshooting to README
+- Created `docs/video_capture_troubleshooting.md`
+- Updated QUICK_REFERENCE.md with video capture option
+- Emphasized video capture as primary method for workshops
+
+### Why Video Capture is Better
+1. **Speed**: 2 minutes vs 30+ minutes
+2. **Consistency**: Same camera, lighting, angle
+3. **Quality**: Better model performance (100% accuracy achieved)
+4. **Simplicity**: No phone transfer, automatic organization
+5. **Workshop-friendly**: Participants get results quickly
+
+## Fast Upload Workflow Update (September 2, 2025 - Later)
+
+### Problem Discovered
+- User found model had false positives (95% confidence on body positions without hands)
+- Uploading 400+ images for expanded dataset took too long (10-15 minutes)
+- Solution: Upload videos instead of extracted frames
+
+### Fast Video Upload Implementation
+1. **Created new workflow** that uploads MP4s instead of JPEGs
+   - `upload_videos.sh` - Interactive upload script (40MB in 1-2 min)
+   - `runpod_extract_and_train.sh` - Extract frames on RunPod's fast infrastructure
+   - `capture_videos_only.py` - Emphasizes fast workflow path
+   - `docs/fast_workflow.md` - Complete documentation
+
+2. **Performance Improvements**
+   - Upload time: 10-15 min → 1-2 min (5-10x faster)
+   - Data size: 400MB → 40MB
+   - Workflow time: 20 min → 10 min total
+
+3. **Key Features**
+   - Supports append mode for iterative improvements
+   - Automatic frame extraction at 5 fps on RunPod
+   - Progress indicators and time estimates
+   - Fallback to scp if rsync unavailable
+
+### Quick Cheat Sheet Added
+Added complete workflow at top of README:
+- Video capture → Upload → Train → Download → Demo
+- All commands in copy-paste format
+- Total time: ~10 minutes from start to webcam demo
+
+### Why This Matters
+1. **Workshop efficiency**: Participants see results faster
+2. **Home internet friendly**: 40MB uploads work on any connection
+3. **Iterative improvement**: Easy to add more data when model needs tuning
+4. **Same quality**: Identical results, just faster pipeline
+
+### Lessons Learned
+- Compress early in pipeline when possible
+- Leverage cloud compute for data processing
+- Provide multiple paths based on user constraints
+- Interactive scripts reduce user errors
+
+Last updated: September 2, 2025, 22:30 PST
+Original session: September 1, 2025, ~3.5 hours
+Video capture session: September 2, 2025, ~2 hours
+Fast upload session: September 2, 2025, ~1 hour
+Status: ✅ Fully working with video capture + fast upload enhancement

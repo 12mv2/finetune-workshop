@@ -11,9 +11,13 @@ venv/
 # YOLOv8
 runs/
 *.pt
+!yolov8n-cls.pt
 *.onnx
 *.engine
 *.mlmodel
+
+# Generated videos
+*.mp4
 
 # Dataset
 hand_cls/
@@ -34,3 +38,6 @@ Thumbs.db
 # Testing
 test_*.py
 test_*/
+
+# Local settings
+.claude/

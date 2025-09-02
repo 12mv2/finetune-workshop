@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Create the required dataset directory structure for the workshop.

@@ -50,9 +50,11 @@ def main(weights: str, imgsz: int = 224, use_overlay: bool = True, perfect_thres
     elif torch.cuda.is_available():
         device = 'cuda'
         print("Using NVIDIA GPU (CUDA)")
+        print(f"GPU: {torch.cuda.get_device_name(0)}")
     else:
         device = 'cpu'
         print("Using CPU")
+        print("Note: On Windows, install CUDA for GPU acceleration with NVIDIA cards")
     
     # Load trained model
     model = YOLO(weights)

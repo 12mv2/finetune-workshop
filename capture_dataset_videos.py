@@ -178,9 +178,11 @@ def main():
     print("\nPress SPACE to begin or ESC to cancel...")
     
     # Initialize video capture
+    # Note: On Windows, if camera doesn't work, try index 1 or 2
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Error: Could not open webcam")
+        print("On Windows, try changing VideoCapture(0) to VideoCapture(1) or VideoCapture(2)")
         return 1
     
     # Wait for user to press SPACE

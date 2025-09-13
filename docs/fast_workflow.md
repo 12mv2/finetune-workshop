@@ -5,9 +5,9 @@ This guide describes the faster method for uploading training data to RunPod by 
 ## Why Use This Method?
 
 ### Upload Time Comparison
-- **Traditional method**: Upload 200-400 JPEG files (~400MB) → 10-15 minutes
+- **Traditional method**: Upload 150 JPEG files (~400MB) → 3 minutes
 - **Fast method**: Upload 2 MP4 files (~40MB) → 1-2 minutes
-- **Speed improvement**: 5-10x faster!
+- **Speed improvement**: ? faster!
 
 ### When to Use Each Method
 

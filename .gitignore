@@ -1,2 +1,35 @@
-.claude
-__pycache__
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+
+# IDE and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing
+test_*.py
+test_*/
+
+# Local settings
+.claude/
+
+# Temporary training outputs (keep final models)
+runs/*/weights/last.pt
+runs/*/weights/epoch*.pt
+
+# Note: Model files (*.pt) and videos (*.mp4) are tracked with Git LFS

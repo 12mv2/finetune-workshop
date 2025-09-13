@@ -92,47 +92,44 @@ def main(weights: str, imgsz: int = 224, use_overlay: bool = True, perfect_thres
         if label == 'hand':
             confidence = max(probs) * 100
             
-            # Special effects only at perfect confidence
-            if confidence >= perfect_threshold:
-                # Apply ghost overlay if available
+            # Determine color based on confidence threshold
+            if confidence >= 95.0:
+                # High confidence (95-100%) - RED
+                text_color = (0, 0, 255)  # Red
+                confidence_color = (0, 0, 255)  # Red
+                detection_text = 'HIGH CONFIDENCE HAND!'
+                
+                # Apply ghost overlay if available for high confidence
                 if ghost_overlay is not None:
-                    # Position ghost in upper right
                     x = frame.shape[1] - 200
                     y = 50
                     frame = apply_overlay(frame, ghost_overlay, x, y)
-                
-                # Add special text with animation effect
-                cv2.putText(
-                    frame,
-                    '👻 PERFECT DETECTION! 👻',
-                    (50, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1.2,
-                    (255, 0, 255),  # Magenta for special achievement
-                    3,
-                    cv2.LINE_AA,
-                )
             else:
-                # Normal detection text
-                cv2.putText(
-                    frame,
-                    'Hand detected!',
-                    (50, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1.0,
-                    (0, 0, 255),
-                    2,
-                    cv2.LINE_AA,
-                )
+                # Low confidence (0-95%) - GREEN
+                text_color = (0, 255, 0)  # Green
+                confidence_color = (0, 255, 0)  # Green
+                detection_text = 'Hand detected'
             
-            # Always show confidence score
+            # Display detection text
+            cv2.putText(
+                frame,
+                detection_text,
+                (50, 50),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1.0,
+                text_color,
+                2,
+                cv2.LINE_AA,
+            )
+            
+            # Always show confidence score with matching color
             cv2.putText(
                 frame,
                 f'Confidence: {confidence:.1f}%',
                 (50, 90),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.7,
-                (0, 255, 0) if confidence < perfect_threshold else (255, 215, 0),  # Gold at perfect
+                confidence_color,
                 2,
                 cv2.LINE_AA,
             )

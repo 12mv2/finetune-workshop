@@ -87,9 +87,9 @@ model = YOLO('yolov8n-cls.pt')
 - No local GPU required
 
 ### Today's Setup
-- RTX 3090 or A4000
-- PyTorch pre-installed
-- ~10 minutes training time
+- RTX A5000
+- PyTorch pre-installed (Framework underneath yolov8n, can fine tune and run model w/ out additional setup)
+- ~3 minutes training time
 
 ---
 

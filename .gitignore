@@ -11,6 +11,7 @@ venv/
 # IDE and editors
 .vscode/
 .idea/
+.scratchpad
 *.swp
 *.swo
 
@@ -36,3 +37,6 @@ best.pt
 # Keep essential models: best_final.pt, best_runpod.pt, yolov8n-cls.pt
 
 # Note: Model files (*.pt) and videos (*.mp4) are tracked with Git LFS
+
+# Generated videos
+*.mp4

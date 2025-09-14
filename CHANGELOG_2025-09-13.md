@@ -156,7 +156,33 @@ def check_for_hand(camera_frame):
 ✅ **QUICK_SETUP.md workflow**: Ready for user testing
 ✅ **Modular design**: Each script has single responsibility, easier to debug
 
+## Documentation Restoration (9:00-9:15 PM)
+
+### Problem After Revert
+Reverting to `abe3cd7` restored working scripts but brought back messy documentation:
+- ❌ **Two conflicting guides**: `QUICK_REFERENCE.md` AND `QUICK_SETUP.md`
+- ❌ **Old README.md**: Broken links, outdated 90-minute timings
+- ❌ **Empty WINDOWS_README.md**: Cleared during previous cleanup
+
+### Solution: Selective Documentation Restore
+- **Restored clean docs from commit `5f1ab2e`**: Updated README.md and QUICK_SETUP.md
+- **Removed duplicate**: Deleted redundant `QUICK_REFERENCE.md` 
+- **Fixed Windows guide**: Added basic setup instructions
+- **Verified all links**: No broken references to deleted files
+
+### Optimal Final State Achieved
+✅ **Working Scripts**: Original modular architecture (proven to work)
+✅ **Clean Documentation**: Updated, consolidated, accurate timings
+✅ **Single source of truth**: QUICK_SETUP.md for step-by-step workflow
+✅ **README.md**: Clean overview, no broken links, 15-minute estimates
+✅ **Cross-platform**: Basic Windows support documented
+✅ **Repository hygiene**: No redundant or conflicting files
+
 ## Context for Future Sessions
 This repository contains a fully tested, production-ready YOLOv8 classification workshop. The complete workflow (dependencies → dataset → cloud training → demo) has been verified end-to-end by live testing. All timing estimates reflect actual performance, and all major gotchas have been documented with solutions.
 
-**Important**: The modular script architecture works well. Avoid over-consolidating working code.
+**Key Learnings:**
+1. **Modular script architecture works well** - Avoid over-consolidating working code
+2. **Documentation needs curation** - Single source of truth prevents confusion
+3. **Test before cleanup** - Major refactoring can break working systems
+4. **Git selective restore** - Can fix docs without breaking functionality

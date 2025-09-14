@@ -1,16 +1,12 @@
 # Windows Setup Guide
 
-This workshop is primarily designed for macOS/Linux. For Windows users:
+⚠️ **UNVERIFIED CONTENT** ⚠️
 
-## Quick Setup
-1. Install Python 3.8+ and add to PATH
-2. Install Git for Windows
-3. Install ffmpeg: `choco install ffmpeg` (or download from ffmpeg.org)
-4. Follow the main README.md instructions
+This Windows guide has not been tested and needs to be created by someone with Windows experience.
 
-## Common Windows Issues
-- **Camera access**: Check Windows Privacy settings
-- **Path issues**: Use forward slashes in Python or escape backslashes
-- **ffmpeg not found**: Add ffmpeg to system PATH
+The workshop has only been verified on macOS/Linux. Windows users will need:
+- Windows-specific setup instructions
+- Tested dependency installation steps
+- Windows-specific troubleshooting
 
-For detailed Windows instructions, see the main README.md troubleshooting section.
+**Someone needs to test and write proper Windows instructions.**

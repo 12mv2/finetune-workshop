@@ -136,17 +136,26 @@ All should work without errors.
 
 ## Step 7: Upload Dataset 
 
-**From your LOCAL terminal** (open new tab/window), upload your dataset:
+**From your LOCAL terminal** (open new tab/window), upload your dataset.
 
+**Use the SAME connection details from Step 6** (the SSH command that worked):
+
+If your SSH command was:
 ```bash
-scp -r -P [port] -i ~/.ssh/id_ed25519 hand_cls root@[ip-address]:/workspace/
+ssh 20egall4xozk4a-6441145b@ssh.runpod.io -i ~/.ssh/id_ed25519
+```
+ssh 20egall4xozk4a-6441145b@ssh.runpod.io -i ~/.ssh/id_ed25519
+Then your scp command is:
+```bash
+scp -r -i ~/.ssh/id_ed25519 hand_cls 20egall4xozk4a-6441145b@ssh.runpod.io:/workspace/
 ```
 
-**Get the exact command from RunPod dashboard** - use the **"SSH over TCP"** connection details.
+**Pattern: Replace `ssh` with `scp -r`, add source and destination**
+- Keep the same user@host part
+- Keep the same SSH key (`-i ~/.ssh/id_ed25519`)
+- Add what to upload (`hand_cls`) and where (`:/workspace/`)
 
-**Keep the entire scp command on ONE line** or it will fail.
-
-**This uploads ~300 images and takes 1 minutes.**
+**This uploads ~300 images and takes 1 minute.**
 
 ---
 

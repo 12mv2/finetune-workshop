@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "openai.chatgpt",
+        "esbenp.prettier-vscode",
+        "redhat.vscode-yaml",
+        "qcz.text-power-tools",
+        "albert.tabout",
+        "ms-vscode.remote-repositories",
+        "mechatroner.rainbow-csv",
+        "mirone.milkdown",
+        "ms-python.vscode-pylance",
+        "ms-python.python"
+    ]
+}

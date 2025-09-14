@@ -93,8 +93,8 @@ def main(weights: str, imgsz: int = 224, use_overlay: bool = True, perfect_thres
             confidence = max(probs) * 100
             
             # Determine color based on confidence threshold
-            if confidence >= 95.0:
-                # High confidence (95-100%) - RED
+            if confidence >= 85.0:
+                # High confidence (85-100%) - RED
                 text_color = (0, 0, 255)  # Red
                 confidence_color = (0, 0, 255)  # Red
                 detection_text = 'HIGH CONFIDENCE HAND!'
@@ -105,7 +105,7 @@ def main(weights: str, imgsz: int = 224, use_overlay: bool = True, perfect_thres
                     y = 50
                     frame = apply_overlay(frame, ghost_overlay, x, y)
             else:
-                # Low confidence (0-95%) - GREEN
+                # Low confidence (0-84%) - GREEN
                 text_color = (0, 255, 0)  # Green
                 confidence_color = (0, 255, 0)  # Green
                 detection_text = 'Hand detected'

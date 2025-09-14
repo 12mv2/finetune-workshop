@@ -4,27 +4,29 @@
 > - **Windows Users** → [**Click here for Windows instructions**](WINDOWS_README.md) 🪟
 > - **macOS/Linux Users** → Continue reading below 🍎🐧
 
-This repository provides the materials for a 1.5‑hour workshop on fine‑tuning **Ultralytics YOLOv8** for image classification.  The goal is to train a binary classifier that detects whether a 3D‑printed Halloween hand is visible in an image and then build a fun live demo that reacts when the hand appears.
+This repository provides the materials for a 15-minute workshop on fine‑tuning **Ultralytics YOLOv8** for image classification.  The goal is to train a binary classifier that detects whether a hand is visible in an image and then build a fun live demo that reacts when the hand appears.
 
 ## 🚀 Quick Start Cheat Sheet
 
-### Option A: Traditional Method (Reliable, 15 min)
+### Complete Workflow (Tested, 15 min total)
 
 ```bash
-# 1. LOCAL: Create dataset
-python3 capture_and_prepare.py  # Records videos & extracts images
+# 1. LOCAL: Install dependencies & create dataset
+pip install -r requirements.txt
+python3 capture_and_prepare.py  # Records videos & extracts ~300 images
 
-# 2. LOCAL: Upload images 
+# 2. RUNPOD: Setup account, create RTX A5000 pod with network storage
+
+# 3. LOCAL: Upload dataset 
 scp -r -P [PORT] -i ~/.ssh/id_ed25519 hand_cls root@[IP]:/workspace/
 
-# 3. RUNPOD: Install & train
-pip install ultralytics
-yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=16
+# 4. RUNPOD: Train (keep command on one line!)
+yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
 
-# 4. LOCAL: Download model (first run = just "train", no number)
-scp -P [PORT] -i ~/.ssh/id_ed25519 root@[IP]:/workspace/runs/classify/train/weights/best.pt ./
+# 5. LOCAL: Download model
+scp -P [PORT] -i ~/.ssh/id_ed25519 root@[IP]:/workspace/hand_cls/runs/classify/train/weights/best.pt ./
 
-# 5. LOCAL: Test
+# 6. LOCAL: Test your model
 python3 live_demo.py --weights best.pt
 ```
 
@@ -52,7 +54,7 @@ This workshop has been fully tested end-to-end. Here's what we'll do:
 1. **Local Setup** (5 min)
    - Install dependencies: `pip install -r requirements.txt`
    - Create dataset with video capture: `python3 capture_and_prepare.py` 
-   - Records 2x20 second videos → extracts 200 images automatically
+   - Records 2x20 second videos → extracts ~300 images automatically
    - Much faster than manual photos and gives better results!
 
 2. **RunPod GPU Setup** (15 min)
@@ -162,7 +164,7 @@ python3 capture_and_prepare.py
 This tool will:
 1. Record 20 seconds of video with your hands visible
 2. Record 20 seconds of video without hands (background only)
-3. Extract frames at 5 fps to create 200 images total (100 per class)
+3. Extract frames at 5 fps to create ~300 images total (~150 per class)
 4. Automatically split 80/20 for training/validation
 
 **Requirements for video capture:**
@@ -204,14 +206,7 @@ From the project root on your RunPod instance, run the following command.  Adjus
 
 ```bash
 # Train a YOLOv8 classifier on your dataset.
-yolo classify train \
-  data=/workspace/hand_cls \
-  model=yolov8n-cls.pt \
-  epochs=15 \
-  imgsz=224 \
-  batch=32 \
-  device=0 \
-  freeze=10
+yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
 ```
 
 During training you’ll see logs showing training and validation accuracy.  YOLOv8 saves results in the `runs/classify/train` folder.  The **best weights** (based on validation accuracy) can be found at `runs/classify/train/weights/best.pt`.
@@ -293,14 +288,14 @@ The script will automatically detect and use Apple Silicon GPU (MPS) if availabl
 - **Script 404 errors** → If GitHub scripts give 404, create them locally or use traditional workflow
 
 ### Training
-- **"does not require grad" error** → Remove `freeze=10` parameter or reduce batch size
+- **"Data argument missing"** → Keep entire YOLO command on ONE line (no line breaks)
 - **CUDA out of memory** → Use `batch=16` or `batch=8`
 - **Training completes in seconds** → This is normal with RTX A5000! Video capture data trains very efficiently
 
 ### General Tips
 - Keep both terminals open (local + RunPod SSH)
 - RunPod shows internal IP (172.x.x.x) - ignore it, use the SSH connection info
-- Training on 200 images from video capture takes less than 1 minute on RTX A5000!
+- Training on ~300 images from video capture takes ~10 seconds on RTX A5000!
 - **STOP YOUR POD** when done to avoid charges!
 
 ### Which Terminal to Use

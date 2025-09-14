@@ -29,4 +29,16 @@ test_*/
 runs/*/weights/last.pt
 runs/*/weights/epoch*.pt
 
-# Note: Model files (*.pt) and videos (*.mp4) are tracked with Git LFS
+# User-generated files (workshop participants create these)
+hand_cls/
+*.mp4
+hand_video.mp4
+not_hand_video.mp4
+
+# Downloaded models (auto-download from Hugging Face)
+yolov8n-cls.pt
+
+# Training outputs (intermediate files)
+runs/
+
+# Note: Final model files (best_*.pt) are tracked with Git LFS

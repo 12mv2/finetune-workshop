@@ -128,5 +128,35 @@ def check_for_hand(camera_frame):
 **Success rate**: 100% accuracy achieved on test run
 **Documentation**: Complete end-to-end workflow tested and verified
 
+## Repository Cleanup Session (Evening - 8:00-9:00 PM)
+
+### What We Attempted
+- **Goal**: Clean up repository by removing redundant files and consolidating scripts
+- **Approach**: Tried to embed all functionality into single `capture_and_prepare.py` script
+- **Problem Discovered**: Broke the working video capture workflow
+
+### Issues Found During Cleanup
+1. **Embedded script complexity**: Combining all video capture, frame extraction, and directory creation into one file created input/display issues
+2. **OpenCV window handling**: `cv2.waitKey()` loops without proper window context caused hangs
+3. **Script interdependencies**: The original modular approach actually worked better
+4. **User input methods**: `input()` vs `cv2.waitKey()` compatibility issues in terminal
+
+### Resolution: Reverted to Working State
+- **Action**: Used `git checkout abe3cd7 .` to restore fully tested working version from earlier today
+- **Result**: Back to original 4-script modular approach that was proven to work end-to-end
+- **Status**: All scripts functional again (`capture_and_prepare.py` → `capture_dataset_videos.py` → `extract_frames_to_dataset.py`)
+
+### Key Learning
+**"If it ain't broke, don't fix it!"** - The original modular script design was working perfectly after extensive testing. Sometimes the "cleaner" solution isn't actually better for user experience.
+
+### Final Repository State (After Revert)
+✅ **Working scripts**: `capture_and_prepare.py`, `capture_dataset_videos.py`, `create_dataset_structure.py`, `extract_frames_to_dataset.py`  
+✅ **Complete dataset**: 599 images with train/val split
+✅ **All dependencies**: OpenCV, ffmpeg, ultralytics working
+✅ **QUICK_SETUP.md workflow**: Ready for user testing
+✅ **Modular design**: Each script has single responsibility, easier to debug
+
 ## Context for Future Sessions
 This repository contains a fully tested, production-ready YOLOv8 classification workshop. The complete workflow (dependencies → dataset → cloud training → demo) has been verified end-to-end by live testing. All timing estimates reflect actual performance, and all major gotchas have been documented with solutions.
+
+**Important**: The modular script architecture works well. Avoid over-consolidating working code.

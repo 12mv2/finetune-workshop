@@ -25,8 +25,11 @@ test_*/
 # Local settings
 .claude/
 
-# Temporary training outputs (keep final models)
-runs/*/weights/last.pt
-runs/*/weights/epoch*.pt
+# Training outputs and redundant models
+runs/
+best_v*.pt
+best.pt
+
+# Keep essential models: best_final.pt, best_runpod.pt, yolov8n-cls.pt
 
 # Note: Model files (*.pt) and videos (*.mp4) are tracked with Git LFS

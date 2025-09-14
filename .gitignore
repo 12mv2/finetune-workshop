@@ -22,8 +22,6 @@ Thumbs.db
 test_*.py
 test_*/
 
-# Local settings
-.claude/
 
 # Temporary training outputs (keep final models)
 runs/*/weights/last.pt

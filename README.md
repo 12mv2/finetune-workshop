@@ -1,8 +1,7 @@
 # Quick Object Classification Workshop: Halloween Hand
 
-> ## 💻 Platform-Specific Instructions
-> - **Windows Users** → [**Click here for Windows instructions**](WINDOWS_README.md) 🪟
-> - **macOS/Linux Users** → Continue reading below 🍎🐧
+> ## 💻 Cross-Platform Workshop
+> Works on **macOS, Linux, and Windows** - all instructions tested ✅
 
 This repository provides the materials for a 15-minute workshop on fine‑tuning **Ultralytics YOLOv8** for image classification.  The goal is to train a binary classifier that detects whether a hand is visible in an image and then build a fun live demo that reacts when the hand appears.
 
@@ -146,15 +145,8 @@ Place ~80 % of your images in `train` and ~20 % in `val`.  The folder names ar
 
 > **Tip:** If you don’t have enough images, augment them by applying rotations, flips and colour jitter.  Data augmentation is built into YOLOv8’s classifier.
 
-For more guidance on collecting and organising your photos, see **[`data_prep.md`](data_prep.md)**.
 
-Use the provided script to create the folder structure:
-```bash
-python create_dataset_structure.py
-# Then manually copy your photos into the appropriate folders
-```
-
-### Option B: Video Capture (Recommended for Workshops)
+### Video Capture (Recommended for Workshops)
 Use our automated video capture tool to create a dataset in 2 minutes:
 
 ```bash
@@ -314,19 +306,6 @@ The script will automatically detect and use Apple Silicon GPU (MPS) if availabl
 - **`capture_videos_only.py`** - Record videos for fast upload workflow
 - **`upload_videos.sh`** - Fast upload script (2 videos instead of 200 images)
 - **`runpod_extract_and_train.sh`** - Extract frames and train on RunPod
-- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - One-page command reference
-
-## Additional Resources
-
-- **[Windows Instructions](WINDOWS_README.md)** - Complete guide for Windows users
-- **[Windows Setup Guide](docs/windows_setup.md)** - Detailed Windows environment setup
-- **[Fast Video Upload Workflow](docs/fast_workflow.md)** - Upload videos instead of images (5-10x faster!)
-- **[Workshop Slides](docs/workshop_slides.md)** - Introduction presentation
-- **[RunPod Setup Guide](docs/runpod_setup.md)** - Detailed GPU setup instructions
-- **[RunPod Quick Setup](docs/runpod_quick_setup.md)** - One-page setup reference
-- **[RunPod Troubleshooting](docs/runpod_setup_troubleshooting.md)** - Real-world issues and solutions
-- **[Video Capture Troubleshooting](docs/video_capture_troubleshooting.md)** - Fix video capture and ffmpeg issues
-- **[Troubleshooting Guide](docs/troubleshooting.md)** - Common issues and solutions
-- **[Next Steps](docs/next_steps.md)** - Continue learning after the workshop
+- **[QUICK_SETUP.md](QUICK_SETUP.md)** - Step-by-step workshop guide
 
 Enjoy your spooky classification workshop! 🎃

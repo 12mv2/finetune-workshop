@@ -10,7 +10,7 @@ Get from zero to working AI hand detection in 15 minutes on your Mac. Every step
 
 - **Make sure you are in the correct project folder before running commands.**  
   For example, if your project folder is named `finetune-workshop`, navigate into it with:  
-  ```bash
+  ```sh
   cd finetune-workshop
   ```
 - **Python 3.8+ recommended** (check with `python3 --version`)
@@ -18,7 +18,7 @@ Get from zero to working AI hand detection in 15 minutes on your Mac. Every step
   - Recommended: `python3 -m venv venv` then `source venv/bin/activate`
   - Or use `uv` if installed (`uv` is a tool that automatically manages virtual environments)
 - Make sure `pip` is up to date:
-  ```bash
+  ```sh
   python3 -m pip install --upgrade pip
   ```
 
@@ -28,13 +28,13 @@ Get from zero to working AI hand detection in 15 minutes on your Mac. Every step
 
 If you have `uv` installed, run:
 
-```bash
+```sh
 uv pip install -r requirements.txt
 ```
 
 If not, activate your virtual environment or use your system Python and run:
 
-```bash
+```sh
 pip install -r requirements.txt
 ```
 
@@ -59,7 +59,7 @@ python3 capture_and_prepare.py
 
 **Verify it worked:**
 
-```bash
+```sh
 find hand_cls -name "*.jpg" | wc -l
 # Should show ~300 images
 ```
@@ -78,7 +78,7 @@ If you see `id_ed25519.pub` → Skip to copying your key
 
 If no SSH keys exist, create one:
 
-```bash
+```sh
 ssh-keygen -t ed25519 -C "your-email@example.com"
 # Press Enter for default location (~/.ssh/id_ed25519)
 # Use a simple passphrase like "runpod" (easier for workshop)
@@ -157,13 +157,13 @@ pbcopy < ~/.ssh/id_ed25519.pub
 
 **Copy SSH command from RunPod dashboard** (looks like):
 
-```bash
+```sh
 ssh [pod-id]@ssh.runpod.io -i ~/.ssh/id_ed25519
 ```
 
 **Connect (keep entire command on ONE line):**
 
-```bash
+```sh
 ssh your-pod-id@ssh.runpod.io -i ~/.ssh/id_ed25519
 # Type 'yes' when asked about fingerprint
 # Enter your passphrase when prompted
@@ -173,7 +173,7 @@ You should see the RunPod welcome message and get a root prompt.
 
 **Test your setup:**
 
-```bash
+```sh
 nvidia-smi
 python3 -c "import torch; print(f'CUDA: {torch.cuda.is_available()}')"
 ls -la /workspace
@@ -189,7 +189,7 @@ All should work without errors.
 
 Use this form of the `scp` command to upload your dataset folder:
 
-```bash
+```sh
 scp -r -P 22 -i ~/.ssh/id_ed25519 hand_cls your-pod-id@ssh.runpod.io:/workspace/
 ```
 
@@ -207,7 +207,7 @@ scp -r -P 22 -i ~/.ssh/id_ed25519 hand_cls your-pod-id@ssh.runpod.io:/workspace/
 
 Back in your RunPod terminal:
 
-```bash
+```sh
 cd /workspace
 yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
 ```
@@ -228,7 +228,7 @@ Model saved to: `/workspace/hand_cls/runs/classify/train/weights/best.pt`
 
 From your LOCAL terminal (Mac), download your trained model with:
 
-```bash
+```sh
 scp -P 22 -i ~/.ssh/id_ed25519 your-pod-id@ssh.runpod.io:/workspace/hand_cls/runs/classify/train/weights/best.pt ./best_trained.pt
 ```
 
@@ -243,7 +243,7 @@ Download takes less than 1 second (model is ~3MB).
 
 Run your newly trained model locally:
 
-```bash
+```sh
 python3 live_demo.py --weights best_trained.pt
 ```
 

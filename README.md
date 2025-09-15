@@ -17,7 +17,11 @@ python3 capture_and_prepare.py  # Records videos & extracts ~300 images
 # 2. RUNPOD: Setup account, create RTX A5000 pod with network storage
 
 # 3. LOCAL: Upload dataset 
-scp -r -P [PORT] -i ~/.ssh/id_ed25519 hand_cls root@[IP]:/workspace/
+# macOS / Linux
+scp -r -P 22065 -i ~/.ssh/id_ed25519 hand_cls root@69.30.85.167:/workspace/
+
+# Windows (PowerShell with OpenSSH)
+scp -r -P 22065 -i C:\Users\<YourUser>\.ssh\id_ed25519 hand_cls root@69.30.85.167:/workspace/
 
 # 4. RUNPOD: Train (keep command on one line!)
 yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
@@ -67,7 +71,15 @@ This workshop has been fully tested end-to-end. Here's what we'll do:
      - Upload 2 videos: `./upload_videos.sh` (40MB in 1-2 min)
      - Extract & train on RunPod: `./runpod_extract_and_train.sh`
    - **Option B - Traditional**: 
-     - Upload 200+ images: `scp -r -P [port] hand_cls root@[ip]:/workspace/` (400MB in 10-15 min)
+     - Upload 200+ images:  
+       ```
+       macOS / Linux:
+       scp -r -P 22065 -i ~/.ssh/id_ed25519 hand_cls root@69.30.85.167:/workspace/
+
+       Windows (PowerShell with OpenSSH):
+       scp -r -P 22065 -i C:\Users\<YourUser>\.ssh\id_ed25519 hand_cls root@69.30.85.167:/workspace/
+       ```
+       (400MB in 10-15 min)
    - Training completes in <1 minute on RTX A5000
 
 4. **Download & Demo** (2 min)

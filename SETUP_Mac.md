@@ -301,7 +301,7 @@ You should see:
 ### SSH Key Permissions Issue
 
 - If you get permission errors connecting to RunPod:  
-  ```bash
+  ```sh
   chmod 600 ~/.ssh/id_ed25519
   chmod 644 ~/.ssh/id_ed25519.pub
   ```

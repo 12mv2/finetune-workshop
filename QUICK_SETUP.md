@@ -149,7 +149,7 @@ Then your scp command is:
 ```bash
 scp -r -i ~/.ssh/id_ed25519 hand_cls 20egall4xozk4a-6441145b@ssh.runpod.io:/workspace/
 ```
-
+ssh 20egall4xozk4a-6441145b@ssh.runpod.io -i ~/.ssh/id_ed25519
 **Pattern: Replace `ssh` with `scp -r`, add source and destination**
 - Keep the same user@host part
 - Keep the same SSH key (`-i ~/.ssh/id_ed25519`)

@@ -112,4 +112,4 @@ Features include confidence display
 
 ---
 
-Enjoy the workshop and happy fine-tuning! 🎃
+Enjoy the workshop 🎃

@@ -1,23 +1,23 @@
-# Complete Halloween Hand Detection Workshop (Mac Setup)
+# Finetune Workshop (Mac Setup)
 
-Get from zero to working AI hand detection in 15 minutes on your Mac. Every step tested and verified.
+Get from zero to a working hand-detection classifier. Every step tested and verified.
 
-⚠️ **Cost Alert**: Need $10 minimum for RunPod • RTX A5000 = $0.25/hour • **STOP POD WHEN DONE!**
+⚠️ **Cost Alert**: Need $10 minimum for RunPod • RTX A5000 ≈ $0.25/hour • **STOP THE POD WHEN DONE**
 
 ---
 
 ## Prerequisites
 
-- **Make sure you are in the correct project folder before running commands.**  
-  For example, if your project folder is named `finetune-workshop`, navigate into it with:  
+- **Be in the correct project folder before running commands.**  
+  Example:
   ```sh
   cd finetune-workshop
   ```
 - **Python 3.8+ recommended** (check with `python3 --version`)
 - Use a Python virtual environment to avoid conflicts:
-  - Recommended: `python3 -m venv venv` then `source venv/bin/activate`
-  - Or use `uv` if installed (`uv` is a tool that automatically manages virtual environments)
-- Make sure `pip` is up to date:
+  - Recommended: `python3 -m venv venv && source venv/bin/activate`
+  - Or use `uv` if installed (manages venvs automatically)
+- Upgrade `pip`:
   ```sh
   python3 -m pip install --upgrade pip
   ```
@@ -26,305 +26,275 @@ Get from zero to working AI hand detection in 15 minutes on your Mac. Every step
 
 ## Step 1: Setup Python Environment & Install Dependencies
 
-If you have `uv` installed, run:
-
+If you have `uv`, run:
 ```sh
 uv pip install -r requirements.txt
 ```
 
-If not, activate your virtual environment or use your system Python and run:
-
+Otherwise:
 ```sh
 pip install -r requirements.txt
 ```
 
-**Should install without warnings.** If you see version conflicts, note them but continue.
+> If you see version conflicts, note them and continue.
 
 ---
 
 ## Step 2: Create Dataset
 
-Run the dataset capture script:
-
-```bash
+Capture and prepare a small dataset:
+```sh
 python3 capture_and_prepare.py
 ```
 
-**This will:**
+This will:
 - Open your webcam with instructions
-- Record 20 seconds with hands visible
-- Record 20 seconds without hands
-- Extract ~300 images automatically
-- Create proper `hand_cls/train/` and `hand_cls/val/` folders
+- Record ~20 s with hands visible, then ~20 s without
+- Extract ~300 images
+- Create `hand_cls/train/` and `hand_cls/val/` folders
 
-**Verify it worked:**
-
+Verify:
 ```sh
 find hand_cls -name "*.jpg" | wc -l
-# Should show ~300 images
+# Expect ~300
 ```
 
 ---
 
-## Step 3: SSH Key Setup (Mac Specific)
+## Step 3: SSH Key Setup (macOS)
 
-**Check if you have SSH keys:**
-
+Check for an existing key:
 ```sh
 ls -la ~/.ssh/
 ```
 
-If you see `id_ed25519.pub` → Skip to copying your key
-
-If no SSH keys exist, create one:
-
+If none, create one:
 ```sh
 ssh-keygen -t ed25519 -C "your-email@example.com"
-# Press Enter for default location (~/.ssh/id_ed25519)
-# Use a simple passphrase like "runpod" (easier for workshop)
-# Press Enter again to confirm passphrase
+# Press Enter for default path (~/.ssh/id_ed25519)
+# Optionally set a simple passphrase (mlvisions)
 ```
 
-**Set correct file permissions on your private key file:**
-
+Fix permissions:
 ```sh
 chmod 600 ~/.ssh/id_ed25519
 ```
 
-**Copy your public key to clipboard (Mac only):**
-
+Copy your **public** key:
 ```sh
 pbcopy < ~/.ssh/id_ed25519.pub
 ```
 
-**WARNING:**  
-- Your **private key (`~/.ssh/id_ed25519`) must never be shared**.  
-- Only share the **public key** (copied above) when adding to RunPod.
+> Never share your **private** key. Only the **public** key is added to RunPod.
 
 ---
 
 ## Step 4: RunPod Account Setup
 
 ### Create Account
-
-1. Go to [runpod.io](https://runpod.io)  
-2. **Sign Up** with email/password  
-3. Verify your email  
+1. Go to runpod.io  
+2. Sign up and verify email
 
 ### Add Funding
-
-1. Go to **Billing**  
-2. **Add Credit** → Add $10+ (minimum required)  
-3. Add credit card or PayPal  
+1. Billing → **Add Credit** ($10+)
 
 ### Add SSH Key
-
-1. Go to **Settings** (gear icon)  
-2. Click **SSH Keys**  
-3. Click **Add SSH Key**  
-4. **Name**: "Workshop Key"  
-5. **Key**: Paste your public key from Step 3 (email part optional)  
-6. Click **Add Key**  
+1. Settings → **SSH Keys** → **Add SSH Key**
+2. Name: `Workshop Key`
+3. Key: paste your public key
+4. Save
 
 ---
 
-## Step 5: Create GPU Pod
+## Step 5: Create GPU Pod 
 
 ### Configure Storage
-
-1. Click **Add network volume** at top  
-2. **Size**: 10-20GB  
-3. **Mount path**: `/workspace`  
-4. **Name**: "workshop-storage"  
+1. **Add network volume**
+2. **Size**: 10–20 GB
+3. **Mount path**: `/workspace`
+4. **Name**: `workshop-storage`
 
 ### Create Pod
-
-1. Click **+ Deploy** → **Pods**  
-2. Select **RTX A5000** (24GB VRAM, ~$0.25/hour)  
-3. Template: **PyTorch 2.4.0** (more stable than newer versions)  
-4. **Uncheck Jupyter notebooks** (we don't need them)  
+1. **+ Deploy** → **Pods**
+2. GPU: **RTX A5000** (24 GB)
+3. Template: **PyTorch 2.4.0** (2.4 tested, 2.8 may work fine)
+4. *(Optional)* Uncheck **Jupyter notebooks**
 
 ### Deploy
-
-1. Enable **SSH** (port 22)  
-2. **Container Disk**: 50GB (if available)  
-3. Click **Deploy Pod**  
-4. **Wait ~30 seconds** for provisioning  
+1. **Expose TCP port 22** so you get a **Public IP** and mapped **<PORT>**  
+   *(You’ll see these later under “Direct TCP Ports.”)*
+2. **Container Disk**: 50 GB (if available)
+3. Click **Deploy Pod** and wait ~30 s
 
 ---
 
 ## Step 6: Connect to Pod
 
-**Copy SSH command from RunPod dashboard** (looks like):
+Use **SSH over exposed TCP** so `scp/sftp` work.
 
+**Template**
 ```sh
-ssh [pod-id]@ssh.runpod.io -i ~/.ssh/id_ed25519
+ssh root@<PUBLIC_IP> -p <PORT> -i ~/.ssh/id_ed25519
 ```
 
-**Connect (keep entire command on ONE line):**
-
+**Example**
 ```sh
-ssh your-pod-id@ssh.runpod.io -i ~/.ssh/id_ed25519
-# Type 'yes' when asked about fingerprint
-# Enter your passphrase when prompted
+ssh root@69.30.85.208 -p 22055 -i ~/.ssh/id_ed25519
 ```
 
-You should see the RunPod welcome message and get a root prompt.
+**Optional QoL**
+```sh
+ssh -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 \
+    root@<PUBLIC_IP> -p <PORT> -i ~/.ssh/id_ed25519
+```
 
-**Test your setup:**
+Accept the fingerprint (`yes`) and enter your key passphrase.
 
+Verify environment:
 ```sh
 nvidia-smi
 python3 -c "import torch; print(f'CUDA: {torch.cuda.is_available()}')"
 ls -la /workspace
 ```
 
-All should work without errors.
+> If any command fails, confirm you used **exposed TCP** and not `ssh.runpod.io`.
 
 ---
 
-## Step 7: Upload Dataset (Mac SCP Instructions)
+## Step 7: Upload Dataset (macOS `scp`)
 
-**From your LOCAL terminal (Mac):**
+From your **local Mac**:
 
-Use this form of the `scp` command to upload your dataset folder:
-
+- from the directory that contains the hand class folder `hand_cls/`, or use and anbsolute path
+  
 ```sh
-scp -r -P 22 -i ~/.ssh/id_ed25519 hand_cls your-pod-id@ssh.runpod.io:/workspace/
+scp -r -P <PORT> -i ~/.ssh/id_ed25519 hand_cls root@<PUBLIC_IP>:/workspace/
 ```
 
-- Replace `your-pod-id` with your actual pod ID from RunPod dashboard (e.g., `20egall4xozk4a-6441145b`)  
-- Replace `22` with the actual SSH port if different (default is 22)  
-- Do **NOT** include brackets `[]` in your command  
-- The `-r` flag copies directories recursively  
-- The `-i` flag specifies your private key  
+Notes:
+- Replace `<PUBLIC_IP>` and `<PORT>` with the **Direct TCP** values shown on the pod
+- `-P` is uppercase on macOS
+- Do **not** include the angle brackets in the command
+- Run from the directory that contains `hand_cls/`
+- Result on pod: `/workspace/hand_cls/...
+- Workspace directory does not exist in the runpod instace, it is created when the scp command is used
 
-**This uploads ~300 images and takes about 1 minute.**
+> Upload is ~1 minute for ~300 images.
 
 ---
 
-## Step 8: Train Model
+## Step 8: Train Model (on the pod)
 
-Back in your RunPod terminal:
+Install deps on the pod:
+```sh
+python3 -m pip install --upgrade pip
+python3 -m pip install ultralytics
+# or:
+# python3 -m pip install -r /workspace/requirements.txt
+```
 
+Train:
 ```sh
 cd /workspace
 yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
+# if 'yolo' not found:
+# python3 -m ultralytics classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
 ```
 
-**CRITICAL:** Keep entire command on ONE line or YOLO will ignore your parameters.
+Expected:
+- ~240 train, ~60 val images (≈300 total)
+- train images are used to train, val are used to validate / check how well the model is learning
+- High accuracy on this simple dataset
 
-You should see:
-
-- "found ~240 images in 2 classes" for training  
-- "found ~60 images in 2 classes" for validation  
-- Final accuracy: 100% (or very close)  
-
-Model saved to: `/workspace/hand_cls/runs/classify/train/weights/best.pt`
+Weights/Model:
+```
+/workspace/hand_cls/runs/classify/train/weights/best.pt
+```
+-best Model (checkpoint) from the 15 epochs
 
 ---
 
-## Step 9: Download Trained Model (Mac SCP)
+## Step 9: Download Trained Model (macOS `scp`)
 
-From your LOCAL terminal (Mac), download your trained model with:
-
+From your **local Mac**:
 ```sh
-scp -P 22 -i ~/.ssh/id_ed25519 your-pod-id@ssh.runpod.io:/workspace/hand_cls/runs/classify/train/weights/best.pt ./best_trained.pt
+scp -P <PORT> -i ~/.ssh/id_ed25519   root@<PUBLIC_IP>:/workspace/hand_cls/runs/classify/train/weights/best.pt   ./best_trained.pt
 ```
 
-- Replace `your-pod-id` and `22` with your actual pod ID and SSH port  
-- Do **NOT** include brackets `[]` in your command  
-
-Download takes less than 1 second (model is ~3MB).
+Notes:
+- Use the **Direct TCP** `<PUBLIC_IP>` and `<PORT>`
+- Do not include the angle brackets
+- best.pt is renamed best_trained.pt
+- saved to the directory you run the scp command 
 
 ---
 
-## Step 10: Test Your Model (Immediate)
+## Step 10: Test Your Model (Local)
 
-Run your newly trained model locally:
-
+Run locally:
 ```sh
 python3 live_demo.py --weights best_trained.pt
 ```
 
 You should see:
+- Webcam preview
+- Real-time hand detection
+- Green text for lower confidence, red for higher
+- Press `q` to quit
+- need to run the live_demo.py from directory where best_trained.pt lives, or provide the full path to best_trained.pt
 
-- Webcam opens  
-- Real-time hand detection  
-- Green text (0-84% confidence): "Hand detected"  
-- Red text (85%+ confidence): "HIGH CONFIDENCE HAND!"  
-- Press 'q' to quit  
-
-🎉 Congratulations! You've trained and deployed an ML model!
+🎉 You trained and ran a finetuned classifier.
 
 ---
 
-## 🛑 CRITICAL: Stop Your Pod!
+## 🛑 Stop Your Pod
 
-**Go back to RunPod dashboard:**
-
-1. Find your running pod  
-2. Click **Stop** or **Terminate**  
-3. Confirm termination  
-
-**Pods charge by the minute while running!**
+RunPod dashboard → Stop or Terminate → Confirm  
+> Pods charge by the minute while running.
 
 ---
 
 ## Workshop Summary
 
-**Result:** Custom AI hand detection model with 100% accuracy
+**Result:** High accuracy on a small, simple dataset
 
-### What You Built:
+### You built
+- ✅ A custom webcam dataset  
+- ✅ A cloud GPU training pipeline  
+- ✅ A real-time demo using your model  
+- ✅ End-to-end ML workflow from data → training → inference
+- ✅ PyTorch framework (engine) with Ultralytics (library), used for both training and inference.
 
-- ✅ Custom dataset from webcam video  
-- ✅ Cloud GPU training pipeline  
-- ✅ Real-time hand detection system  
-- ✅ Complete ML workflow from data to deployment  
-
-### Files You Created:
-
-- `hand_cls/` - Your training dataset (~600 images)  
-- `best_trained.pt` - Your custom AI model (3MB)  
-- Working webcam demo with your model  
+### Artifacts
+- `hand_cls/` — dataset (few hundred images)  
+- `best_trained.pt` — trained classifier (~3 MB)
 
 ---
 
 ## Troubleshooting
 
-### Python Version Mismatch
+### Python version mismatch (local)
+- Check `python3 --version` and `which python3`
+- Use a venv (`venv` or `uv`) to isolate deps
 
-- Mac may have multiple Python versions (system Python, Homebrew Python, pyenv-managed Python)  
-- Check `python3 --version` and `which python3` to confirm which Python is running  
-- Use a virtual environment (`venv` or `uv`) to isolate dependencies and avoid conflicts  
+### SSH key permissions (local)
+```sh
+chmod 600 ~/.ssh/id_ed25519
+chmod 644 ~/.ssh/id_ed25519.pub
+```
 
-### SSH Key Permissions Issue
-
-- If you get permission errors connecting to RunPod:  
+### `scp` issues
+- Use **exposed TCP**: `root@<PUBLIC_IP>` with `-P <PORT>`
+- `-P` must be uppercase on macOS
+- Example:
   ```sh
-  chmod 600 ~/.ssh/id_ed25519
-  chmod 644 ~/.ssh/id_ed25519.pub
+  scp -r -P <PORT> -i ~/.ssh/id_ed25519 hand_cls root@<PUBLIC_IP>:/workspace/
   ```
-- Ensure your private key is NOT world-readable  
+- **Bastion `ssh.runpod.io` does not support `scp/sftp`**
 
-### SCP Common Issues
-
-- Make sure you replace placeholders (`your-pod-id`, `22`) with actual values from the RunPod dashboard  
-- Do **NOT** include brackets `[]` in your commands  
-- Use `-P` (uppercase) to specify port on macOS `scp`  
-- Example correct command:  
-  ```sh
-  scp -r -P 22 -i ~/.ssh/id_ed25519 hand_cls your-pod-id@ssh.runpod.io:/workspace/
-  ```
-- If SCP fails, double-check SSH connection first with the `ssh` command  
-
-### Camera Issues
-
-- If webcam doesn't open in the dataset creation step or live demo:  
-  - Check your Mac's camera permissions in System Preferences → Security & Privacy → Camera  
-  - Try closing other apps that might be using the camera  
-  - Restart your terminal or computer if needed  
+### Camera issues (local)
+- macOS: System Settings → Privacy & Security → **Camera**
+- Close other apps using the camera
+- Restart your terminal or Mac if needed
 
 ---
-
-**For detailed troubleshooting and advanced options, see [README.md](README.md)**

@@ -100,14 +100,15 @@ After training, the best model weights will be saved in the `runs/classify/train
 ## Live Demo
 
 Run the live demo locally to test your trained model. The demo opens your webcam, performs real-time classification, and displays messages when a hand is detected.
+Note: best.pt is renamed to best_trained.pt when scp transfer from runpod instance to local machine occure.
 
 Example command:
 
 ```sh
-python live_demo.py --weights best.pt --imgsz 224
+python3 live_demo.py --weights best_trained.pt --imgsz 224
 ```
 
-Features include confidence display, special effects at high confidence, and optional ghost overlays.
+Features include confidence display
 
 ---
 

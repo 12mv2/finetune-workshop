@@ -1,4 +1,19 @@
-# Quick Object Classification Workshop: Halloween Hand
+# Halloween Hand Classification Workshop
+
+🎯 **[→ START THE WORKSHOP HERE ←](WORKSHOP.md)**
+
+> Complete 15-minute guide with step-by-step instructions
+
+---
+
+## About This Workshop
+
+**Part of the Halloween Visions project** - this hand classification will be used to detect specific hand signals like being scared, wanting help, being scary, and being invisible.
+
+## Model Information
+- **Base model**: YOLOv8n classification from [Ultralytics](https://github.com/ultralytics/ultralytics)
+- **Pretrained weights**: Downloads automatically from Ultralytics Hub  
+- **Alternative source**: [Hugging Face Ultralytics](https://huggingface.co/Ultralytics)
 
 > ## 💻 Cross-Platform Workshop
 > Works on **macOS, Linux, and Windows** - all instructions tested ✅

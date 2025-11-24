@@ -29,6 +29,14 @@ test_*/
 # Development logs
 CHANGELOG_*.md
 
+# Personal cheat sheets
+RUNPOD_CHEATSHEET.md
+
+# Virtual environments
+workshop-env/
+venv/
+.venv/
+
 # Training outputs and redundant models
 runs/
 best_v*.pt

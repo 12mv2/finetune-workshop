@@ -1,5 +1,15 @@
 # Halloween Hand Workshop: Fine-tuning Ultralytics YOLOv8 for Hand Classification
 
+🎯 **[→ START THE WORKSHOP HERE ←](WORKSHOP.md)**
+
+> Complete 15-minute guide with step-by-step instructions
+
+---
+
+## About This Workshop
+
+**Part of the Halloween Visions project** - this hand classification will be used to detect specific hand signals like being scared, wanting help, being scary, and being invisible.
+
 Welcome to the Halloween Hand Workshop! This project guides you through fine-tuning a pretrained Ultralytics YOLOv8 classifier to detect whether a hand is visible in an image. You'll capture your own dataset, train a binary classifier on a GPU pod in the cloud, and run a fun live demo on your local machine.
 
 ---
@@ -109,6 +119,13 @@ python3 live_demo.py --weights best_trained.pt --imgsz 224
 ```
 
 Features include confidence display
+
+---
+
+## Model Information
+- **Base model**: YOLOv8n classification from [Ultralytics](https://github.com/ultralytics/ultralytics)
+- **Pretrained weights**: Downloads automatically from Ultralytics Hub  
+- **Alternative source**: [Hugging Face Ultralytics](https://huggingface.co/Ultralytics)
 
 ---
 

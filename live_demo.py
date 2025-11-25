@@ -93,7 +93,7 @@ def main(weights: str, imgsz: int = 224, use_overlay: bool = True, perfect_thres
             confidence = max(probs) * 100
             
             # Determine color based on confidence threshold
-            if confidence >= 85.0:
+            if confidence >= 95.0:
                 # High confidence (85-100%) - RED
                 text_color = (0, 0, 255)  # Red
                 confidence_color = (0, 0, 255)  # Red

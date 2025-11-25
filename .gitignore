@@ -42,9 +42,14 @@ runs/
 best_v*.pt
 best.pt
 
+# Personal/experimental models
+colin_*.pt
+quinn_*.pt
+
 # Keep essential models: best_final.pt, best_runpod.pt, yolov8n-cls.pt
 
-# Note: Model files (*.pt) and videos (*.mp4) are tracked with Git LFS
+# Note: Model files (*.pt) and videos (*.mp4, *.mov) are tracked with Git LFS
 
-# Generated videos
-*.mp4
+# Generated videos (optional - remove if you want to track them)
+# *.mp4
+# *.mov

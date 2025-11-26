@@ -29,9 +29,6 @@ test_*/
 # Development logs
 CHANGELOG_*.md
 
-# Personal cheat sheets
-RUNPOD_CHEATSHEET.md
-
 # Virtual environments
 workshop-env/
 venv/

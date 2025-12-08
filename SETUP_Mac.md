@@ -185,6 +185,20 @@ Notes:
 
 ## Step 8: Train Model (on the pod)
 
+### 🖥️ WHERE: RunPod SSH Terminal (NOT your local Mac)
+
+**Verify you're on RunPod:**
+
+Your prompt should show: `root@<pod-id>:/workspace#`
+
+**NOT your local Mac:**
+- ❌ `yourname@MacBook:$` (Mac local)
+- ❌ `yourname@iMac:$` (Mac local)
+
+If you see your local username, STOP and return to Step 6.
+
+---
+
 Install deps on the pod:
 ```sh
 python3 -m pip install --upgrade pip
@@ -196,19 +210,38 @@ python3 -m pip install ultralytics
 Train:
 ```sh
 cd /workspace
+
+# Check GPU is available (should show RTX A5000):
+nvidia-smi || { echo "⚠️ ERROR: No GPU detected. Run on RunPod (Step 6), not locally."; false; }
+
+# Train on GPU:
 yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
 # if 'yolo' not found:
 # python3 -m ultralytics classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
 ```
 
+**Expected behavior:**
+
+| Environment | Training Time | Device Output |
+|-------------|--------------|---------------|
+| ✅ RunPod GPU | 10-20 seconds | `device: 0 (NVIDIA RTX A5000)` |
+| ❌ Local CPU/MPS | 60+ seconds | `device: cpu` or `device: mps` |
+
+**If you see `device: cpu` or `device: mps` in the output:**
+- You trained locally by accident
+- Delete the `runs/` folder: `rm -rf runs/`
+- Return to Step 6 and SSH to RunPod
+
 Expected:
 - ~240 train, ~60 val images (≈300 total)
+- `device: 0 (NVIDIA RTX A5000, 24091MiB)` or similar GPU
 - train images are used to train, val are used to validate / check how well the model is learning
 - High accuracy on this simple dataset
+- Training completes in 10-20 seconds
 
 Weights/Model:
 ```
-/workspace/hand_cls/runs/classify/train/weights/best.pt
+/workspace/runs/classify/train/weights/best.pt
 ```
 -best Model (checkpoint) from the 15 epochs
 
@@ -218,7 +251,7 @@ Weights/Model:
 
 From your **local Mac**:
 ```sh
-scp -P <PORT> -i ~/.ssh/id_ed25519   root@<PUBLIC_IP>:/workspace/hand_cls/runs/classify/train/weights/best.pt   ./best_trained.pt
+scp -P <PORT> -i ~/.ssh/id_ed25519 root@<PUBLIC_IP>:/workspace/runs/classify/train/weights/best.pt ./best_trained.pt
 ```
 
 Notes:

@@ -183,21 +183,53 @@ scp -r -P 22015 -i ~/.ssh/id_ed25519 hand_cls root@194.68.245.13:/workspace/
 
 ---
 
-## Step 8: Train Model 
+## Step 8: Train Model
 
-**Back in your RunPod terminal:**
+### 🖥️ WHERE: RunPod Terminal (NOT your local machine)
+
+**Verify you're on RunPod:**
+
+Your prompt should show: `root@<pod-id>:/workspace#`
+
+**NOT your local machine:**
+- ❌ `ubuntu24@hostname:$` (Linux local)
+- ❌ `yourname@MacBook:$` (Mac local)
+- ❌ `C:\Users\you>` (Windows local)
+
+If you see your local username, STOP and return to Step 6.
+
+---
+
+**Run these commands in your RunPod terminal:**
 
 ```bash
 cd /workspace
+
+# Check GPU is available (should show RTX A5000):
+nvidia-smi || { echo "⚠️ ERROR: No GPU detected. Run on RunPod (Step 6), not locally."; false; }
+
+# Train on GPU (keep on ONE line):
 yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
 ```
 
-**CRITICAL: Keep entire command on ONE line** or YOLO will ignore your parameters.
+**Expected behavior:**
+
+| Environment | Training Time | Device Output |
+|-------------|--------------|---------------|
+| ✅ RunPod GPU | 10-20 seconds | `device: 0 (NVIDIA RTX A5000)` |
+| ❌ Local CPU | 60+ seconds | `device: cpu` |
+
+**If you see `device: cpu` in the output:**
+- You trained locally by accident
+- Delete the `runs/` folder: `rm -rf runs/`
+- Return to Step 6 and SSH to RunPod
 
 **You should see:**
 - "found ~240 images in 2 classes" for training
-- "found ~60 images in 2 classes" for validation  
+- "found ~60 images in 2 classes" for validation
+- `device: 0 (NVIDIA RTX A5000, 24091MiB)` or similar GPU
 - Final accuracy: 100% (or very close)
+- Training completes in 10-20 seconds
 
 **Model saved to:** `/workspace/runs/classify/train/weights/best.pt`
 

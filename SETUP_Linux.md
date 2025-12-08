@@ -101,6 +101,20 @@ scp -r -P <PORT> -i ~/.ssh/id_ed25519 hand_cls root@<PUBLIC_IP>:/workspace/
 
 ### 8. Train on RunPod
 
+#### 🖥️ WHERE: RunPod SSH Terminal (NOT your local machine)
+
+**Verify you're on RunPod:**
+
+Your prompt should show: `root@<pod-id>:/workspace#`
+
+**NOT your local machine:**
+- ❌ `ubuntu24@hostname:$` (Linux local)
+- ❌ `yourname@MacBook:$` (Mac local)
+
+If you see your local username, STOP and return to Step 6.
+
+---
+
 In the **RunPod SSH session**:
 
 ```bash
@@ -110,17 +124,35 @@ pip install ultralytics
 # Optional: Use tmux for persistent session
 tmux new -s training
 
-# Train (keep on one line!)
 cd /workspace
+
+# Check GPU is available (should show RTX A5000):
+nvidia-smi || { echo "⚠️ ERROR: No GPU detected. Run on RunPod (Step 6), not locally."; false; }
+
+# Train on GPU (keep on one line!):
 yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
 
 # Detach from tmux: Ctrl+b, d
 # Reattach later: tmux attach -t training
 ```
 
+**Expected behavior:**
+
+| Environment | Training Time | Device Output |
+|-------------|--------------|---------------|
+| ✅ RunPod GPU | 10-20 seconds | `device: 0 (NVIDIA RTX A5000)` |
+| ❌ Local CPU | 60+ seconds | `device: cpu` |
+
+**If you see `device: cpu` in the output:**
+- You trained locally by accident
+- Delete the `runs/` folder: `rm -rf runs/`
+- Return to Step 6 and SSH to RunPod
+
 Expected output:
 - ~240 train, ~60 val images
+- `device: 0 (NVIDIA RTX A5000, 24091MiB)` or similar GPU
 - High accuracy on simple dataset
+- Training completes in 10-20 seconds
 - Weights: `/workspace/runs/classify/train/weights/best.pt`
 
 ### 9. Download Trained Model

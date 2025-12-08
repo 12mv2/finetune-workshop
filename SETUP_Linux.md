@@ -143,6 +143,12 @@ python3 live_demo.py --weights best_trained.pt
 - Green/red confidence indicators
 - Press `q` to quit
 
+**Known Issue:** Text overlay may not render on some Linux display servers.
+If no confidence text appears, use debug_demo instead:
+```bash
+python3 debug_demo.py --weights best_trained.pt
+```
+
 ### 11. Stop Your Pod
 
 RunPod Dashboard → Stop/Terminate → Confirm

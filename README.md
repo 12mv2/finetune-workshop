@@ -6,14 +6,12 @@ Train your own hand detection AI in 15 minutes using transfer learning and cloud
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
-**Never done this before? Start here:**
-
-1. **Choose your setup guide** for your platform:
-   - 🍎 [Mac Setup](SETUP_Mac.md) - macOS with Apple Silicon or Intel
-   - 🪟 [Windows Setup](SETUP_Windows.md) - Windows 10/11 with WSL or native
-   - 🐧 [Linux Setup](SETUP_Linux.md) - Ubuntu/Debian systems
+1. **Choose your setup guide:**
+   - [Mac Setup](SETUP_Mac.md) - macOS with Apple Silicon or Intel
+   - [Windows Setup](SETUP_Windows.md) - Windows 10/11 with WSL or native
+   - [Linux Setup](SETUP_Linux.md) - Ubuntu/Debian systems
 
 2. **Follow the 15-minute workflow:**
    ```bash
@@ -27,30 +25,45 @@ Train your own hand detection AI in 15 minutes using transfer learning and cloud
    python3 live_demo.py --weights best_trained.pt
    ```
 
-3. **📖 Detailed walkthrough:** [WORKSHOP.md](WORKSHOP.md) has the complete step-by-step guide
+3. **Detailed walkthrough:** [WORKSHOP.md](WORKSHOP.md) - Complete step-by-step guide
 
-4. **⚡ Quick reference:** [RUNPOD_CHEATSHEET.md](RUNPOD_CHEATSHEET.md) for copy-paste commands
+4. **Quick reference:** [RUNPOD_CHEATSHEET.md](RUNPOD_CHEATSHEET.md) - Copy-paste commands
 
-5. **🔧 Technical deep-dive:** [docs/TECHNICAL_GUIDE.md](docs/TECHNICAL_GUIDE.md) explains how it works
+5. **Technical deep-dive:** [docs/TECHNICAL_GUIDE.md](docs/TECHNICAL_GUIDE.md) - How YOLO training works
 
 ---
 
-## 📊 Workflow Diagram
+## Workflow Diagram
 
-```mermaid
-graph TD
-    A[👤 Local Machine] -->|1. Create Dataset| B[📹 Capture Videos]
-    B -->|2. Extract Frames| C[🖼️ hand_cls/ Dataset<br/>~200 images]
-    C -->|3. Upload via SCP| D[☁️ RunPod GPU Pod]
-    D -->|4. Train Model| E[🎯 YOLO Training<br/>15 epochs, 8 min]
-    E -->|5. Save Weights| F[💾 best.pt<br/>~3MB model]
-    F -->|6. Download via SCP| G[👤 Local Machine]
-    G -->|7. Run Demo| H[🎥 Live Webcam<br/>Hand Detection]
-
-    style A fill:#e1f5ff
-    style D fill:#fff4e1
-    style E fill:#ffe1e1
-    style H fill:#e1ffe1
+```
+Local Machine                 RunPod GPU Pod              Local Machine
+     |                              |                           |
+     |  1. Capture Videos          |                           |
+     |---> (hand_video.mp4,        |                           |
+     |      not_hand_video.mp4)    |                           |
+     |                              |                           |
+     |  2. Extract Frames          |                           |
+     |---> hand_cls/               |                           |
+     |     ~200 images              |                           |
+     |     (80/20 train/val)        |                           |
+     |                              |                           |
+     |  3. Upload Dataset           |                           |
+     |----------------------------->|                           |
+     |         (SCP)                |                           |
+     |                              |                           |
+     |                              |  4. Train YOLOv8          |
+     |                              |---> 15 epochs, 8 min      |
+     |                              |                           |
+     |                              |  5. Save Weights          |
+     |                              |---> best.pt (~3MB)        |
+     |                              |                           |
+     |  6. Download Model           |                           |
+     |<-----------------------------|                           |
+     |         (SCP)                |                           |
+     |                              |                           |
+     |  7. Run Demo                 |                           |
+     |---------------------------------------------------> Webcam
+     |     (live_demo.py)           |                      Detection
 ```
 
 **What happens at each step:**
@@ -69,23 +82,21 @@ graph TD
 
 ---
 
-## 📚 Documentation Guide
+## Documentation
 
-**Choose your path:**
-
-- **First-time user?** → Start with your platform's setup guide above
-- **Want the full story?** → Read [WORKSHOP.md](WORKSHOP.md)
-- **Need quick commands?** → Use [RUNPOD_CHEATSHEET.md](RUNPOD_CHEATSHEET.md)
-- **Understand the ML?** → Read [docs/TECHNICAL_GUIDE.md](docs/TECHNICAL_GUIDE.md)
-- **Troubleshooting?** → Check the Troubleshooting section in your setup guide
+- **First-time user:** Start with your platform's setup guide above
+- **Full walkthrough:** [WORKSHOP.md](WORKSHOP.md)
+- **Quick commands:** [RUNPOD_CHEATSHEET.md](RUNPOD_CHEATSHEET.md)
+- **Technical details:** [docs/TECHNICAL_GUIDE.md](docs/TECHNICAL_GUIDE.md)
+- **Troubleshooting:** See your setup guide
 
 ## What You'll Learn
 
-- ✅ **Transfer Learning** - Fine-tune a pretrained YOLOv8 classifier (1000 classes → 2 classes)
-- ✅ **Dataset Preparation** - Capture videos, extract frames, organize train/val splits
-- ✅ **Cloud GPU Training** - Use RunPod to train 100x faster than CPU
-- ✅ **Real-time Inference** - Run live webcam demo with your trained model
-- ✅ **End-to-End ML Pipeline** - Data collection → Training → Deployment
+- **Transfer Learning** - Fine-tune a pretrained YOLOv8 classifier (1000 classes → 2 classes)
+- **Dataset Preparation** - Capture videos, extract frames, organize train/val splits
+- **Cloud GPU Training** - Use RunPod to train 100x faster than CPU
+- **Real-time Inference** - Run live webcam demo with your trained model
+- **End-to-End ML Pipeline** - Data collection → Training → Deployment
 
 ---
 
@@ -194,5 +205,3 @@ finetune-workshop/
 - **Framework:** [PyTorch](https://pytorch.org)
 
 ---
-
-Enjoy the workshop! 🎃👻

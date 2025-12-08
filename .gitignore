@@ -50,3 +50,5 @@ quinn_*.pt
 # Generated videos (optional - remove if you want to track them)
 # *.mp4
 # *.mov
+
+.devnotes

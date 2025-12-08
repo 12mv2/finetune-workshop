@@ -95,9 +95,6 @@ def distribute_frames(temp_dir, class_name, train_dir, val_dir, total_frames=100
     # Get all extracted frames
     frames = sorted([f for f in os.listdir(temp_dir) if f.endswith('.jpg')])
     
-    if len(frames) != total_frames:
-        print(f"Warning: Expected {total_frames} frames, got {len(frames)}")
-    
     # Split 80/20
     train_count = int(len(frames) * 0.8)
     train_frames = frames[:train_count]
@@ -150,36 +147,29 @@ def main():
     create_dataset_dirs()
     
     # Check for existing images
-    existing_images = False
+    total_existing = 0
     for class_name in ['hand', 'not_hand']:
         train_count = count_existing_images(f'hand_cls/train/{class_name}')
         val_count = count_existing_images(f'hand_cls/val/{class_name}')
-        if train_count > 0 or val_count > 0:
-            existing_images = True
-            print(f"\nWarning: Found existing {class_name} images:")
-            print(f"  Train: {train_count} images")
-            print(f"  Val: {val_count} images")
-    
-    if existing_images:
-        print("\nWhat would you like to do?")
-        print("1. Replace existing images (start fresh)")
-        print("2. Add to existing images (append)")
-        print("3. Cancel")
-        
-        response = input("\nEnter choice (1/2/3): ").strip()
-        
+        total_existing += train_count + val_count
+
+    if total_existing > 0:
+        print(f"\nFound {total_existing} existing images. Replace or add to them?")
+        print("  1. Replace (start fresh)")
+        print("  2. Add (append new images)")
+        print("  3. Cancel")
+
+        response = input("Choice (1/2/3): ").strip()
+
         if response == '1':
-            # Clear existing images
-            print("\nClearing existing images...")
             for class_name in ['hand', 'not_hand']:
                 clear_directory(f'hand_cls/train/{class_name}')
                 clear_directory(f'hand_cls/val/{class_name}')
             append_mode = False
         elif response == '2':
-            print("\nAdding to existing dataset...")
             append_mode = True
         else:
-            print("Extraction cancelled.")
+            print("Cancelled.")
             return 0
     else:
         append_mode = False
@@ -189,42 +179,36 @@ def main():
     os.makedirs(temp_dir, exist_ok=True)
     
     try:
-        # Process hand video
-        print("\n--- Processing hand_video.mp4 ---")
-        print("Extracting frames at 5 fps...")
-        
+        print("\nExtracting frames (5 fps)...")
         output_pattern = os.path.join(temp_dir, 'frame_%03d.jpg')
+
+        # Process hand video
         if not extract_frames("hand_video.mp4", output_pattern, fps=5):
             return 1
-        
-        train_count, val_count = distribute_frames(
+
+        hand_train, hand_val = distribute_frames(
             temp_dir, 'hand',
             'hand_cls/train/hand',
             'hand_cls/val/hand',
             append=append_mode
         )
-        print(f"✓ Created {train_count} training images")
-        print(f"✓ Created {val_count} validation images")
-        
+
         # Clear temp directory
         for f in os.listdir(temp_dir):
             os.remove(os.path.join(temp_dir, f))
-        
+
         # Process not_hand video
-        print("\n--- Processing not_hand_video.mp4 ---")
-        print("Extracting frames at 5 fps...")
-        
         if not extract_frames("not_hand_video.mp4", output_pattern, fps=5):
             return 1
-        
-        train_count, val_count = distribute_frames(
+
+        nothand_train, nothand_val = distribute_frames(
             temp_dir, 'not_hand',
             'hand_cls/train/not_hand',
             'hand_cls/val/not_hand',
             append=append_mode
         )
-        print(f"✓ Created {train_count} training images")
-        print(f"✓ Created {val_count} validation images")
+
+        print(f"✓ Extracted {hand_train + hand_val} hand, {nothand_train + nothand_val} not_hand images")
         
     finally:
         # Cleanup temp directory
@@ -232,22 +216,13 @@ def main():
             shutil.rmtree(temp_dir)
     
     # Final summary
-    print("\n✅ Dataset creation complete!")
-    print("\n📊 Dataset summary:")
     total = 0
     for split in ['train', 'val']:
-        print(f"\n{split.upper()}:")
         for class_name in ['hand', 'not_hand']:
             count = count_existing_images(f'hand_cls/{split}/{class_name}')
             total += count
-            print(f"  {class_name}: {count} images")
-    
-    print(f"\nTotal images: {total}")
-    print("\n🚀 Your dataset is ready for training!")
-    print("Next steps:")
-    print("1. Review images in hand_cls/ directory")
-    print("2. Upload to RunPod for training")
-    print("3. Or run locally with: yolo classify train model=yolov8n-cls.pt data=hand_cls epochs=15")
+
+    print(f"\n✅ Dataset ready: {total} total images (80/20 train/val split)")
     
     return 0
 

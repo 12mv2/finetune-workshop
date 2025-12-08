@@ -84,16 +84,27 @@ def countdown_capture(cap, duration=3, video_type="hands"):
 def record_video(cap, output_path, duration=20, video_type="hands"):
     """Record video for specified duration with progress display."""
     # Get video properties
-    fps = int(cap.get(cv2.CAP_PROP_FPS))
-    if fps == 0:
-        fps = 30  # Default if can't detect
-    
+    reported_fps = int(cap.get(cv2.CAP_PROP_FPS))
+    if reported_fps == 0:
+        reported_fps = 30  # Default if can't detect
+
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    
-    # Create video writer
+
+    # Measure actual capture rate by counting frames
+    # This fixes the issue where camera reports 30fps but actually captures at ~15fps
+    test_start = time.time()
+    test_frames = 0
+    while time.time() - test_start < 1.0:  # Test for 1 second
+        ret, _ = cap.read()
+        if ret:
+            test_frames += 1
+
+    actual_fps = max(test_frames, 15)  # Use measured FPS, minimum 15
+
+    # Create video writer using ACTUAL fps, not reported fps
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+    out = cv2.VideoWriter(output_path, fourcc, actual_fps, (width, height))
     
     start_time = time.time()
     frame_count = 0
@@ -152,7 +163,7 @@ def record_video(cap, output_path, duration=20, video_type="hands"):
             return False
     
     out.release()
-    print(f"✓ Recorded {frame_count} frames ({frame_count/fps:.1f} seconds)")
+    print(f"✓ Recorded {frame_count} frames ({frame_count/actual_fps:.1f} seconds at {actual_fps} fps)")
     return True
 
 

@@ -77,11 +77,9 @@ def main():
             print(f"Warning: {e}")
 
     print("\n✅ Dataset ready!")
-    print("\nNext steps:")
-    print("1. Upload to RunPod (see WORKSHOP.md Step 7):")
-    print("   scp -r -P <PORT> -i ~/.ssh/id_ed25519 hand_cls root@<IP>:/workspace/")
-    print("\n2. Train on RunPod GPU (NOT locally - see Step 8)")
-    print("\n⚠️  Do NOT run 'yolo classify train' locally - it will train on CPU instead of GPU")
+    print("\nGet SSH command from RunPod: ssh root@<IP> -p <PORT> -i ~/.ssh/id_ed25519")
+    print("Upload (change -p to -P):      scp -r -P <PORT> -i ~/.ssh/id_ed25519 hand_cls root@<IP>:/workspace/")
+    print("Then SSH to RunPod and train (see WORKSHOP.md Step 8). Do NOT train locally!")
     
     return 0
 

@@ -76,7 +76,12 @@ def main():
         except Exception as e:
             print(f"Warning: {e}")
 
-    print("\n✅ Ready to train! Upload to RunPod or run: yolo classify train model=yolov8n-cls.pt data=hand_cls epochs=15")
+    print("\n✅ Dataset ready!")
+    print("\nNext steps:")
+    print("1. Upload to RunPod (see WORKSHOP.md Step 7):")
+    print("   scp -r -P <PORT> -i ~/.ssh/id_ed25519 hand_cls root@<IP>:/workspace/")
+    print("\n2. Train on RunPod GPU (NOT locally - see Step 8)")
+    print("\n⚠️  Do NOT run 'yolo classify train' locally - it will train on CPU instead of GPU")
     
     return 0
 

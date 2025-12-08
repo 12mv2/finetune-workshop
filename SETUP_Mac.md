@@ -28,12 +28,12 @@ Get from zero to a working hand-detection classifier. Every step tested and veri
 
 If you have `uv`, run:
 ```sh
-uv pip install -r requirements.txt
+uv pip install -e .
 ```
 
 Otherwise:
 ```sh
-pip install -r requirements.txt
+pip install -e .
 ```
 
 > If you see version conflicts, note them and continue.

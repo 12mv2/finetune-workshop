@@ -1,6 +1,6 @@
-# Finetune Workshop (Linux Setup)
+# Hand Classification Workshop (Linux Setup)
 
-Train a hand-detection classifier end-to-end. Tested workflow for developers.
+Train a hand-detection classifier end-to-end using YOLOv8 and cloud GPUs.
 
 ⚠️ **Cost**: $10 minimum for RunPod • RTX A5000 ≈ $0.25/hour • **STOP THE POD WHEN DONE**
 
@@ -34,13 +34,13 @@ sudo apt-get install -y libxcb-xinerama0
 ### 2. Python Environment & Dependencies
 
 ```bash
-# Using uv (recommended)
-uv pip install -r requirements.txt
+# Using uv (recommended - fast and reliable)
+uv sync
 
-# Or standard pip
+# Or standard pip with venv
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e .
 ```
 
 ### 3. Create Dataset

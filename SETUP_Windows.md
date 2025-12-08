@@ -13,7 +13,7 @@ This repository provides the materials for a 15-minute workshop on fine‑tuning
 
 ```bash
 # 1. LOCAL: Install dependencies & create dataset
-pip install -r requirements.txt
+pip install -e .
 python3 capture_and_prepare.py  # Records videos & extracts ~300 images
 
 # 2. RUNPOD: Setup account, create RTX A5000 pod with network storage
@@ -57,7 +57,7 @@ python3 capture_videos_only.py
 This workshop has been fully tested end-to-end. Here's what we'll do:
 
 1. **Local Setup** (5 min)
-   - Install dependencies: `pip install -r requirements.txt`
+   - Install dependencies: `pip install -e .`
    - Create dataset with video capture: `python3 capture_and_prepare.py` 
    - Records 2x20 second videos → extracts ~300 images automatically
    - Much faster than manual photos and gives better results!
@@ -108,7 +108,7 @@ This workshop has been fully tested end-to-end. Here's what we'll do:
 
 2. **Install dependencies locally** (for dataset prep and demo):
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 
 3. **Prepare your dataset** (see Dataset Preparation below)

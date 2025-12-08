@@ -52,3 +52,4 @@ quinn_*.pt
 # *.mov
 
 .devnotesyolov8n-cls.pt
+runs/classify/train*

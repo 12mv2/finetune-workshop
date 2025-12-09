@@ -92,11 +92,12 @@ Local Machine                 RunPod GPU Pod              Local Machine
 
 ## What You'll Learn
 
-- **Transfer Learning** - Fine-tune a pretrained YOLOv8 classifier (1000 classes → 2 classes)
+- **Transfer Learning** - Fine-tune a pretrained YOLOv8 classifier (1000 classes → 2+ classes)
 - **Dataset Preparation** - Capture videos, extract frames, organize train/val splits
 - **Cloud GPU Training** - Use RunPod to train 100x faster than CPU
 - **Real-time Inference** - Run live webcam demo with your trained model
 - **End-to-End ML Pipeline** - Data collection → Training → Deployment
+- **Multi-Class Training** - Scale from binary to multi-class classification (see [TECHNICAL_GUIDE.md](docs/TECHNICAL_GUIDE.md))
 
 ---
 
@@ -181,13 +182,17 @@ finetune-workshop/
 ├── capture_and_prepare.py      # Main workflow: capture videos + extract frames
 ├── capture_dataset_videos.py   # Record webcam videos (20s each)
 ├── extract_frames_to_dataset.py # Extract frames at 5fps, split 80/20
+├── build_multiclass_dataset.py # Build multi-class dataset from binary classifiers
 ├── live_demo.py                # Real-time webcam demo
 ├── debug_demo.py               # Debug version with all class confidences
-├── hand_cls/                   # Your dataset (created by scripts)
+├── hand_cls/                   # Binary dataset (created by scripts)
 │   ├── train/hand/            # Training images with hands
 │   ├── train/not_hand/        # Training images without hands
 │   ├── val/hand/              # Validation images with hands
 │   └── val/not_hand/          # Validation images without hands
+├── multi_cls/                  # Multi-class dataset (optional)
+│   ├── train/                 # Multiple object classes
+│   └── val/
 ├── docs/TECHNICAL_GUIDE.md    # Deep-dive: how YOLO training works
 ├── WORKSHOP.md                # Step-by-step walkthrough
 ├── SETUP_Mac.md               # macOS-specific setup

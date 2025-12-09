@@ -54,5 +54,11 @@ quinn_*.pt
 *.mp4
 *.mov
 
-.devnotesyolov8n-cls.pt
-runs/classify/train*
+# Dataset directories (user-generated)
+Training Data/
+multi_cls/
+multi_cls_*/
+*.tar.gz
+
+# Workspace artifacts
+.mpy-workbench/

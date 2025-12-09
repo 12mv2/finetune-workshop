@@ -1,0 +1,26 @@
+# Quick Reference - RunPod Training
+# Pod: root@203.57.40.154 -p 10024
+
+## 1. Capture Data (local)
+python3 capture_and_prepare.py
+
+## 2. Upload to RunPod (local)
+scp -r -P 10024 -i ~/.ssh/id_ed25519 hand_cls root@203.57.40.154:/workspace/
+
+## 3. SSH to RunPod (local)
+ssh root@203.57.40.154 -p 10024 -i ~/.ssh/id_ed25519
+
+## 4. Train (on RunPod)
+cd /workspace
+nvidia-smi
+yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
+
+## 5. Download model (local)
+scp -P 10024 -i ~/.ssh/id_ed25519 root@203.57.40.154:/workspace/runs/classify/train/weights/best.pt ./best_trained.pt
+
+# If train2, train3, etc:
+scp -P 10024 -i ~/.ssh/id_ed25519 root@203.57.40.154:/workspace/runs/classify/train3/weights/best.pt ./best_trained.pt
+
+## 6. Run demo (local)
+python3 live_demo.py --weights best_trained.pt
+python3 debug_demo.py --weights best_trained.pt

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Capture video data for hand classification dataset.
-Records two 60-second videos: one with hands, one without.
+Records two 30-second videos: one with hands, one without.
 """
 import cv2
 import time
@@ -81,7 +81,7 @@ def countdown_capture(cap, duration=3, video_type="hands"):
     return True
 
 
-def record_video(cap, output_path, duration=60, video_type="hands"):
+def record_video(cap, output_path, duration=30, video_type="hands"):
     """Record video for specified duration with progress display."""
     # Get video properties
     reported_fps = int(cap.get(cv2.CAP_PROP_FPS))
@@ -170,7 +170,7 @@ def record_video(cap, output_path, duration=60, video_type="hands"):
 def main():
     """Main function to capture both videos."""
     print("=== Hand Classification Video Capture ===")
-    print("This tool will record two 60-second videos:")
+    print("This tool will record two 30-second videos:")
     print("1. With your hands visible")
     print("2. Without hands (background only)")
     print("\nMake sure your webcam is connected and working.")
@@ -227,7 +227,7 @@ def main():
         cv2.destroyAllWindows()
         return 0
     
-    if not record_video(cap, "hand_video.mp4", 60, "hands"):
+    if not record_video(cap, "hand_video.mp4", 30, "hands"):
         cap.release()
         cv2.destroyAllWindows()
         return 0
@@ -242,7 +242,7 @@ def main():
         cv2.destroyAllWindows()
         return 0
     
-    if not record_video(cap, "not_hand_video.mp4", 60, "no hands"):
+    if not record_video(cap, "not_hand_video.mp4", 30, "no hands"):
         cap.release()
         cv2.destroyAllWindows()
         return 0
@@ -253,8 +253,8 @@ def main():
     
     print("\n✅ Video capture complete!")
     print("\nCreated files:")
-    print("  - hand_video.mp4 (60 seconds)")
-    print("  - not_hand_video.mp4 (60 seconds)")
+    print("  - hand_video.mp4 (30 seconds)")
+    print("  - not_hand_video.mp4 (30 seconds)")
     print("\nNext step: Run extract_frames_to_dataset.py to create training images")
     
     return 0

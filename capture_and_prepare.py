@@ -77,10 +77,20 @@ def main():
             print(f"Warning: {e}")
 
     print("\n✅ Dataset ready!")
-    print("\nGet SSH command from RunPod: ssh root@<IP> -p <PORT> -i ~/.ssh/id_ed25519")
-    print("Upload (change -p to -P):      scp -r -P <PORT> -i ~/.ssh/id_ed25519 hand_cls root@<IP>:/workspace/")
-    print("Then SSH to RunPod and train (see WORKSHOP.md Step 8). Do NOT train locally!")
-    
+    print("\n" + "="*50)
+    print("NEXT STEP: Train your model")
+    print("="*50)
+    print("\nOption A: Cloud GPU (faster)")
+    print("  1. Get SSH command from RunPod: ssh root@<IP> -p <PORT> -i ~/.ssh/id_ed25519")
+    print("  2. Upload (change -p to -P):    scp -r -P <PORT> -i ~/.ssh/id_ed25519 hand_cls root@<IP>:/workspace/")
+    print("  3. SSH to RunPod and train (see WORKSHOP.md)")
+    print("\nOption B: Local CPU (no cloud needed)")
+    print("  source .venv/bin/activate")
+    print("  yolo classify train model=yolov8n-cls.pt data=hand_cls epochs=15 batch=16 device=cpu")
+    print("\nAfter training completes, look for 'Results saved to' path, then test:")
+    print("  python3 live_demo.py --weights runs/classify/trainN/weights/best.pt")
+    print("  (replace trainN with your actual folder, e.g., train, train2, train3)")
+
     return 0
 
 

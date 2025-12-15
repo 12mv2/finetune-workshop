@@ -13,16 +13,20 @@ Train your own hand detection AI in 15 minutes using transfer learning and cloud
    - [Windows Setup](SETUP_Windows.md) - Windows 10/11 with WSL or native
    - [Linux Setup](SETUP_Linux.md) - Ubuntu/Debian systems
 
-2. **Follow the 15-minute workflow:**
+2. **Follow the workflow:**
    ```bash
-   # 1. Create your dataset (3 minutes)
+   # 1. Create your dataset (30 seconds)
    python3 capture_and_prepare.py
 
-   # 2. Upload to GPU & train (8 minutes)
-   # See your setup guide for commands
+   # 2. Train your model (choose one):
 
-   # 3. Test your model (2 minutes)
-   python3 live_demo.py --weights best_trained.pt
+   # Option A: Cloud GPU - see your setup guide
+   # Option B: Local CPU - no cloud needed:
+   source .venv/bin/activate
+   yolo classify train model=yolov8n-cls.pt data=hand_cls epochs=15 batch=16 device=cpu
+
+   # 3. Test your model
+   python3 live_demo.py --weights runs/classify/train/weights/best.pt
    ```
 
 3. **Detailed walkthrough:** [WORKSHOP.md](WORKSHOP.md) - Complete step-by-step guide
@@ -118,7 +122,9 @@ Output: "Hand detected!" or "No hand"
 
 ---
 
-## Training Command
+## Training Options
+
+### Option A: Cloud GPU Training (Recommended)
 
 ```bash
 yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batch=32 device=0
@@ -132,6 +138,31 @@ yolo classify train model=yolov8n-cls.pt data=/workspace/hand_cls epochs=15 batc
 - `device=0` — Use first GPU (CUDA device 0)
 
 **Output:** `runs/classify/train/weights/best.pt` (best model based on validation accuracy)
+
+### Option B: Local CPU Training
+
+No cloud account? Train directly on your machine:
+
+```bash
+# Activate the virtual environment first
+source .venv/bin/activate
+
+# Then train
+yolo classify train model=yolov8n-cls.pt data=hand_cls epochs=15 batch=16 device=cpu
+```
+
+**Differences from GPU training:**
+- `data=hand_cls` — Local path (no `/workspace/` prefix)
+- `batch=16` — Smaller batch size for CPU memory
+- `device=cpu` — Use CPU instead of GPU
+
+**When to use local training:**
+- Testing your dataset before uploading to cloud
+- Small datasets (<500 images)
+- Learning/debugging the training process
+- No cloud GPU access
+
+**Output:** Same location: `runs/classify/train/weights/best.pt`
 
 ---
 

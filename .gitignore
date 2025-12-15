@@ -58,6 +58,12 @@ quinn_*.pt
 Training Data/
 multi_cls/
 multi_cls_*/
+hand_cls/train/*/*.jpg
+hand_cls/train/*/*.jpeg
+hand_cls/train/*/*.png
+hand_cls/val/*/*.jpg
+hand_cls/val/*/*.jpeg
+hand_cls/val/*/*.png
 *.tar.gz
 
 # Workspace artifacts

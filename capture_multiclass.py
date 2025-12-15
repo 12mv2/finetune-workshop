@@ -7,6 +7,7 @@ Designed to be run multiple times by different people to accumulate diverse data
 
 Usage:
     python3 capture_multiclass.py
+    python3 capture_multiclass.py --camera 1  # Use camera index 1
 
 Output structure (compatible with build_multiclass_dataset.py):
     Training Data/
@@ -18,6 +19,7 @@ Output structure (compatible with build_multiclass_dataset.py):
                 hand/
                 not_hand/
 """
+import argparse
 import cv2
 import time
 import os
@@ -227,7 +229,7 @@ def get_class_names():
     print("\n=== Multi-Class Training Data Capture ===\n")
 
     # Default classes for QuestV3
-    default_classes = ["hand", "9v_battery", "black_spool", "green_spool", "hammer", "orange"]
+    default_classes = ["hand", "9v_battery", "black_spool", "green_spool", "hammer", "blue_floppy"]
 
     print("Default classes for QuestV3:")
     for i, c in enumerate(default_classes, 1):
@@ -260,6 +262,13 @@ def get_class_names():
 
 def main():
     """Main capture loop."""
+    # Parse arguments
+    parser = argparse.ArgumentParser(description='Capture multi-class training data')
+    parser.add_argument('--camera', type=int, default=CAMERA_INDEX,
+                        help=f'Camera index (default: {CAMERA_INDEX})')
+    args = parser.parse_args()
+    camera_index = args.camera
+
     # Check ffmpeg
     if not check_ffmpeg():
         print("Error: ffmpeg not found. Install with:")
@@ -278,10 +287,10 @@ def main():
     print(f"Extraction rate: {EXTRACT_FPS} fps (~{RECORD_DURATION * EXTRACT_FPS} images per class)")
 
     # Initialize camera
-    cap = cv2.VideoCapture(CAMERA_INDEX)
+    cap = cv2.VideoCapture(camera_index)
     if not cap.isOpened():
-        print(f"Error: Could not open camera {CAMERA_INDEX}")
-        print("Try changing CAMERA_INDEX at top of script")
+        print(f"Error: Could not open camera {camera_index}")
+        print("Try: python3 capture_multiclass.py --camera 1")
         return 1
 
     # Set resolution
@@ -357,11 +366,17 @@ def main():
         print(f"Session ID: {session_id}")
         print(f"Total images: {total_images}")
         print(f"Location: {base_dir.absolute()}")
-        print("\nRun again with different person/lighting to add more data.")
-        print("\nNext steps:")
-        print("  1. Collect more data (run this script again)")
-        print("  2. Build dataset: python3 build_multiclass_dataset.py --output multi_cls_v3")
-        print("  3. Train model: yolo classify train model=yolov8n-cls.pt data=multi_cls_v3 epochs=50")
+        print("\n" + "=" * 50)
+        print("NEXT STEPS")
+        print("=" * 50)
+        print("\nOption 1: Capture more data (recommended for better accuracy)")
+        print("  python3 capture_multiclass.py --camera 4")
+        print("  (try different angles, lighting, people)")
+        print("\nOption 2: Build dataset and train")
+        print("  # Balanced dataset (recommended):")
+        print("  python3 build_multiclass_dataset.py --undersample-background 280")
+        print("\n  # Full dataset (more background images):")
+        print("  python3 build_multiclass_dataset.py")
 
     finally:
         cap.release()

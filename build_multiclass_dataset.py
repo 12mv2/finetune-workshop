@@ -35,7 +35,7 @@ CLASS_MAPPING = [
     ("black_spool_cls", "black_spool"),
     ("green_spool_cls", "green_spool"),
     ("hammer_cls", "hammer"),
-    ("orange_cls", "orange"),
+    ("blue_floppy_cls", "blue_floppy"),
 ]
 
 # Legacy mapping (for old dataset structure):
@@ -205,10 +205,18 @@ def main():
         print(f"  TOTAL: {total} images")
 
     print("\n" + "=" * 60)
-    print("Dataset ready!")
+    print("DATASET READY!")
     print("=" * 60)
-    print(f"\nTo train, run:")
-    print(f"  yolo classify train model=yolov8n-cls.pt data={output_dir} epochs=50 imgsz=640")
+    print(f"\nOutput: {output_dir}/")
+    print("\n" + "=" * 60)
+    print("NEXT STEPS")
+    print("=" * 60)
+    print("\nTrain your model:")
+    print("  source .venv/bin/activate")
+    print(f"  yolo classify train model=yolov8n-cls.pt data={output_dir} epochs=25 batch=16 patience=10 device=cpu")
+    print("\nAfter training, test your model:")
+    print("  python3 live_demo.py --weights runs/classify/trainN/weights/best.pt")
+    print("  (replace trainN with your actual folder from 'Results saved to' output)")
     print()
 
     return 0

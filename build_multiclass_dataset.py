@@ -27,15 +27,27 @@ from pathlib import Path
 
 # Configuration: Map source folders to class names
 # Format: (source_folder_name, target_class_name)
+#
+# Default mapping for capture_multiclass.py output:
 CLASS_MAPPING = [
-    ("hand1_cls", "hand"),
-    ("orangeBall_cls", "orange_ball"),
-    ("orange2_cls", "orange_ball"),  # Merged with orange_ball
+    ("hand_cls", "hand"),
+    ("9v_battery_cls", "9v_battery"),
+    ("black_spool_cls", "black_spool"),
+    ("green_spool_cls", "green_spool"),
     ("hammer_cls", "hammer"),
-    ("greenSpool_cls", "green_spool"),
-    ("blackSpoolFilament_cls", "black_spool"),
-    ("9vBatteryExchange_cls", "9v_battery"),
+    ("orange_cls", "orange"),
 ]
+
+# Legacy mapping (for old dataset structure):
+# CLASS_MAPPING = [
+#     ("hand1_cls", "hand"),
+#     ("orangeBall_cls", "orange_ball"),
+#     ("orange2_cls", "orange_ball"),  # Merged with orange_ball
+#     ("hammer_cls", "hammer"),
+#     ("greenSpool_cls", "green_spool"),
+#     ("blackSpoolFilament_cls", "black_spool"),
+#     ("9vBatteryExchange_cls", "9v_battery"),
+# ]
 
 SOURCE_DIR = Path("Training Data")
 
